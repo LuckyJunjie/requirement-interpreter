@@ -7,12 +7,18 @@
 `requirement-interpreter` is a markdown-style parser for syntactic requirements interpreters, designed to make it easily to rapidly prototype a requirement and statically verify its consistency.
 The grammar supported by `requirement-interpreter` is based on the parametric grammar used by ECMA-262 (the JavaScript language standard).
 
+
+## Additional functions
+https://www.npmjs.com/package/exceljs used to read excel file content and transfer to the .interpreter files for next handling purpose. 
+NOTE: failed to find quick solution to read PPT, propose to also use excel if don't want to directly write the .interpreter file.
+
 ## Usage
 ```
 Syntax:                   requirement-interpreter [options] [...files]
 
 Examples:                 requirement-interpreter es6.interpreter
                           requirement-interpreter --out es6.md --format markdown es6.interpreter
+                          requirement-interpreter ./spec/requirements_demo.interpreter --excelInputFile ./inputs/excel/sampleexcel.xlsx
 
 Options:
  -f, --format FORMAT      The output format.

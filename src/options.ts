@@ -88,6 +88,10 @@ export interface CompilerOptions {
      * Indicates whether internal diagnostic information should be reported to the console.
      */
     diagnostics?: boolean;
+    /**
+     * Indicates the file path for specify the input excel file to generate .interpreter.
+     */
+    excelInput?: string;
 }
 
 /**

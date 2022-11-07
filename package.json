@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "@esfx/async-canceltoken": "^1.0.0-pre.13",
-    "@esfx/cancelable": "^1.0.0-pre.13"
+    "@esfx/cancelable": "^1.0.0-pre.13",
+    "exceljs": "^4.3.0"
   }
 }
