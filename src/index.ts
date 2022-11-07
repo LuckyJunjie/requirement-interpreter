@@ -36,6 +36,6 @@ export * from "./binder";
 export * from "./checker";
 export * from "./emitter";
 export * from "./stringwriter";
-export * from "./grammar";
+export * from "./interpreter";
 export * from "./navigator";
 export * from "./visitor";

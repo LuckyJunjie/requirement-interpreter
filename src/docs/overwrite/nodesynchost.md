@@ -1,3 +1,3 @@
 ---
-uid: 'grammarkdown!NodeSyncHost:class'
+uid: 'requirement-interpreter!NodeSyncHost:class'
 ---

@@ -1,3 +1,3 @@
 ---
-uid: 'grammarkdown!CompilerOptions:interface'
+uid: 'requirement-interpreter!CompilerOptions:interface'
 ---

@@ -6,13 +6,13 @@
  */
 
 import { CancelToken } from "@esfx/async-canceltoken";
-import { Grammar } from "../grammar";
+import { Interpreter } from "../interpreter";
 import { CoreAsyncHost } from "../host";
 
 describe("Checker", () => {
     it("cancelable", async () => {
         const cts = CancelToken.source();
-        const grammar = new Grammar(["cancelable.grammar"], {}, CoreAsyncHost.from({
+        const grammar = new Interpreter(["cancelable.grammar"], {}, CoreAsyncHost.from({
             async readFile(file: string) { return ""; },
             async writeFile(file: string, content: string) { }
         }));

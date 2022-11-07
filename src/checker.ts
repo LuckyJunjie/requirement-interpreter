@@ -1464,21 +1464,21 @@ export class Resolver {
     }
 
     /**
-     * Gets the filename of a parsed grammarkdown file for the provided effective filename and position, taking into account `@line` directives.
+     * Gets the filename of a parsed requirement-interpreter file for the provided effective filename and position, taking into account `@line` directives.
      */
     public getRawFilenameAtEffectivePosition(filename: string, position: Position) {
         return this._lineOffsetMap?.getRawFilenameAtEffectivePosition(filename, position);
     }
 
     /**
-     * Gets the position in a parsed grammarkdown file for the provided effective filename and position, taking into account `@line` directives.
+     * Gets the position in a parsed requirement-interpreter file for the provided effective filename and position, taking into account `@line` directives.
      */
     public getRawPositionFromEffectivePosition(filename: string, position: Position) {
         return this._lineOffsetMap?.getRawPositionFromEffectivePosition(filename, position);
     }
 
     /**
-     * Gets the range in a parsed grammarkdown file for the provided effective filename and position, taking into account `@line` directives.
+     * Gets the range in a parsed requirement-interpreter file for the provided effective filename and position, taking into account `@line` directives.
      */
     public getRawRangeFromEffectiveRange(filename: string, range: Range) {
         return this._lineOffsetMap?.getRawRangeFromEffectiveRange(filename, range);

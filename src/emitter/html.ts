@@ -43,7 +43,7 @@ export class HtmlEmitter extends Emitter {
     protected extension = ".html";
 
     protected emitSourceFile(node: SourceFile) {
-        this.writer.write(`<div class="grammar">`);
+        this.writer.write(`<div class="interpreter">`);
         this.writer.indent();
         this.writer.writeln();
         super.emitSourceFile(node);

@@ -4,8 +4,8 @@ title: Compiler API
 ---
 
 # Compiler API
-The Compiler API provides the common services used to validate a @grammarkdown!Grammar:class.
+The Compiler API provides the common services used to validate a @requirement-interpreter!Grammar:class.
 
 # Related Links
-- @grammarkdown!Grammar:class class
-- @grammarkdown!CompilerOptions:interface interface
+- @requirement-interpreter!Grammar:class class
+- @requirement-interpreter!CompilerOptions:interface interface

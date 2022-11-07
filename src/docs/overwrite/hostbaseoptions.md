@@ -1,3 +1,3 @@
 ---
-uid: 'grammarkdown!HostBaseOptions:interface'
+uid: 'requirement-interpreter!HostBaseOptions:interface'
 ---

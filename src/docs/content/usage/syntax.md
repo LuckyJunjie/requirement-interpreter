@@ -1,6 +1,6 @@
 ## Syntax
 
-A `grammarkdown` grammar file uses significant whitespace in the form of line terminators and indentation. Tab (ASCII 0x9) characters are preferred,
+A `requirement-interpreter` interpreter file uses significant whitespace in the form of line terminators and indentation. Tab (ASCII 0x9) characters are preferred,
 however using multiple spaces for indentation is supported as long as all nested elements have the same amount of leading whitespace.
 
 #### Productions
@@ -8,7 +8,7 @@ however using multiple spaces for indentation is supported as long as all nested
 A *Production* consists of a left-hand-side *Nonterminal* followed by a colon (`:`) separator and one or more *right-hand-side* sentences consisting of
 various forms of *terminal* and *nonterminal* symbols. For example:
 
-```grammarkdown
+```requirement-interpreter
 NameSpaceImport : `*` `as` ImportedBinding
 ```
 
@@ -16,7 +16,7 @@ It is recommended that *Productions* should follow pascal-case naming convention
 
 You may specify multiple productions for a *Nonterminal* on multiple lines, as follows:
 
-```grammarkdown
+```requirement-interpreter
 NamedImports : `{` `}`
 NamedImports : `{` ImportList `}`
 NamedImports : `{` ImportList `,` `}`
@@ -24,7 +24,7 @@ NamedImports : `{` ImportList `,` `}`
 
 You may also specify multiple left-hand-side sentences for a single production by indenting them:
 
-```grammarkdown
+```requirement-interpreter
 NamedImports :
     `{` `}`
     `{` ImportList `}`
@@ -33,7 +33,7 @@ NamedImports :
 
 A *Production* may specify one or more *parameters* that can be used to reuse a *Nonterminal* in various circumstances:
 
-```grammarkdown
+```requirement-interpreter
 IdentifierReference[Yield] :
     Identifier
     [~Yield] `yield`
@@ -41,7 +41,7 @@ IdentifierReference[Yield] :
 
 A *Production* may also specify a limited set of terminals, by using the `one of` keyphrase:
 
-```grammarkdown
+```requirement-interpreter
 Keyword :: one of
 	`break`		`do`		`in`			`typeof`
 	`case`		`else`		`instanceof`	`var`
@@ -64,7 +64,7 @@ prefixes:
 - `~` - Indicates the named parameter is *unset* in the referenced production. For example: `~Async`
 - `?` - Indicates the current state of the named parameter is used in the referenced production. For example: `?Yield`
 
-```grammarkdown
+```requirement-interpreter
 Declaration[Yield] :
 	HoistableDeclaration[?Yield]
 	ClassDeclaration[?Yield]
@@ -97,7 +97,7 @@ Character literals may be specified using one of the following forms:
 
 Character ranges may be specified using the `through` keyword:
 
-```grammarkdown
+```requirement-interpreter
     SourceCharacter but not one of `"` or `\` or U+0000 through U+001F
 ```
 
@@ -105,7 +105,7 @@ Character ranges may be specified using the `through` keyword:
 
 A sentence of *Prose* is a single line with a leading greater-than ('>') character. For example:
 
-```grammarkdown
+```requirement-interpreter
 > any Unicode code point
 ```
 
@@ -113,7 +113,7 @@ A sentence of *Prose* is a single line with a leading greater-than ('>') charact
 
 The `but not` condition allows you to reference a production, excluding some part of that production. For example:
 
-```grammarkdown
+```requirement-interpreter
 MultiLineNotAsteriskChar ::
 	SourceCharacter but not `*`
 ```
@@ -125,7 +125,7 @@ Here, *MultiLineNotAsteriskChar* may contain any alternative from *SourceCharact
 You can exclude multiple alternatives by including a list of symbols to exclude through the use of the `one of` keyphrase.
 Each entry in the list is separated by `or`:
 
-```grammarkdown
+```requirement-interpreter
 MultiLineNotForwardSlashOrAsteriskChar ::
 	SourceCharacter but not one of `/` or `*`
 ```
@@ -135,7 +135,7 @@ MultiLineNotForwardSlashOrAsteriskChar ::
 A *Constraint* is a zero-width test at the start of a right-hand-side that indicates that the right-hand-side is only matched
 when the specified *Parameter* is either *set* (using the `+` prefix), or *unset* (using the `~` prefix). For example:
 
-```grammarkdown
+```requirement-interpreter
 [~Yield] `yield`
 ```
 
@@ -161,10 +161,10 @@ A *lookahead assertion* has the following operators:
 
 #### Linking
 
-During emit, `grammarkdown` implicitly adds a generated name for each *Production* and *Right-hand side* that can be used to
+During emit, `requirement-interpreter` implicitly adds a generated name for each *Production* and *Right-hand side* that can be used to
 link directly to the production using a URI fragment. You can explicitly set the name for a production by tagging it with a custom link name:
 
-```grammarkdown
+```requirement-interpreter
 Declaration[Yield] :
 	HoistableDeclaration[?Yield]       #declaration-hoistable
 	ClassDeclaration[?Yield]           #declaration-class
@@ -173,33 +173,33 @@ Declaration[Yield] :
 
 #### Comments
 
-You can also annotate your grammar with C-style single-line and multi-line comments.
+You can also annotate your interpreter with C-style single-line and multi-line comments.
 
 #### `@`-Directives
 
-Grammarkdown provides several directives for customizing the behavior of the grammar checker from within the grammar file itself:
+Grammarkdown provides several directives for customizing the behavior of the interpreter checker from within the interpreter file itself:
 
-- `@import "path"` - Import another grammar.
-- `@define <setting> <value>` - Override a limited set of grammar options.
+- `@import "path"` - Import another interpreter.
+- `@define <setting> <value>` - Override a limited set of interpreter options.
 	- `setting` can be:
 		- `noStrictParametricProductions` - Disables strict checking of parameters.
 		- `noUnusedParameters` - Determines whether to report errors when parameters are unused.
 	- `value` can be:
 		- `true` - Sets the provided setting to `true`.
 		- `false` - Sets the provided setting to `false`.
-		- `default` - Sets the provided setting to the value provided in the grammar options.
-- `@line <number> ["path"]` or `@line default` - Changes the grammar checker to report errors using the provided line number and path, or resets line numbering to the current line number in the file.
+		- `default` - Sets the provided setting to the value provided in the interpreter options.
+- `@line <number> ["path"]` or `@line default` - Changes the interpreter checker to report errors using the provided line number and path, or resets line numbering to the current line number in the file.
 
 #### Examples
 
-For comprehensive examples of `grammarkdown` syntax and output, you can review the following samples:
+For comprehensive examples of `requirement-interpreter` syntax and output, you can review the following samples:
 
 * ECMA-262 version 2020 (ES2020) Grammar
-  * [Plain-text](https://github.com/rbuckton/grammarkdown/blob/master/spec/es2020.grammar)
-  * [HTML](https://rbuckton.github.io/grammarkdown/es2020.html)
+  * [Plain-text](https://github.com/rbuckton/requirement-interpreter/blob/master/spec/es2020.interpreter)
+  * [HTML](https://rbuckton.github.io/requirement-interpreter/es2020.html)
 * ECMA-262 version 2015 (ES6) Grammar
-  * [Plain-text](https://github.com/rbuckton/grammarkdown/blob/master/spec/es6.grammar)
-  * [HTML](https://rbuckton.github.io/grammarkdown/es6.html)
+  * [Plain-text](https://github.com/rbuckton/requirement-interpreter/blob/master/spec/es6.interpreter)
+  * [HTML](https://rbuckton.github.io/requirement-interpreter/es6.html)
 * TypeScript 1.5 Supplemental Grammar
-  * [Plain-text](https://github.com/rbuckton/grammarkdown/blob/master/spec/typescript.grammar)
-  * [HTML](https://rbuckton.github.io/grammarkdown/typescript.html)
+  * [Plain-text](https://github.com/rbuckton/requirement-interpreter/blob/master/spec/typescript.interpreter)
+  * [HTML](https://rbuckton.github.io/requirement-interpreter/typescript.html)

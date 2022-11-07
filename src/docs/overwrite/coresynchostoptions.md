@@ -1,3 +1,3 @@
 ---
-uid: 'grammarkdown!CoreSyncHostOptions:interface'
+uid: 'requirement-interpreter!CoreSyncHostOptions:interface'
 ---

@@ -333,7 +333,7 @@ export class MarkdownEmitter extends Emitter {
 
     protected emitButNotSymbol(node: ButNotSymbol) {
         this.emitNode(node.left);
-        this.writer.write(` **but not** `);
+        this.writer.write(` **TEST CHECK POINT!** `);
         this.emitNode(node.right);
     }
 

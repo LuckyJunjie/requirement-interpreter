@@ -189,7 +189,7 @@ export type CommentTrivia =
 
 /**
  * Represent a single-line comment trivia token.
- * ```grammarkdown
+ * ```requirement-interpreter
  * // comment
  * ```
  * {@docCategory Nodes}
@@ -223,7 +223,7 @@ export type HtmlTrivia =
 
 /**
  * Represents an HTML comment trivia token:
- * ```grammarkdown
+ * ```requirement-interpreter
  * Production ::
  *   <!--before-->Nonterminal
  * ```
@@ -247,7 +247,7 @@ export abstract class HtmlTagTriviaBase<TKind extends HtmlTagTriviaKind> extends
 
 /**
  * Represents an HTML open-tag trivia token:
- * ```grammarkdown
+ * ```requirement-interpreter
  * Production ::
  *   <ins>Inserted</ins>
  *   <del>Deleted</del>
@@ -262,7 +262,7 @@ export class HtmlOpenTagTrivia extends HtmlTagTriviaBase<SyntaxKind.HtmlOpenTagT
 
 /**
  * Represents an HTML close-tag trivia token:
- * ```grammarkdown
+ * ```requirement-interpreter
  * Production ::
  *   <ins>Inserted</ins>
  *   <del>Deleted</del>
@@ -285,7 +285,7 @@ export class Token<TKind extends TokenKind = TokenKind> extends Node<TKind> {
 
 /**
  * Represents a single- or double-quoted string literal (used by `@import` and `@line`)
- * ```grammarkdown
+ * ```requirement-interpreter
  * @import "file"
  * ```
  * {@docCategory Nodes}
@@ -303,7 +303,7 @@ export class StringLiteral extends Node<SyntaxKind.StringLiteral> implements Tex
 
 /**
  * Represents a number literal (used by `@line`)
- * ```grammarkdown
+ * ```requirement-interpreter
  * @line 500
  * Production :: Nonterminal
  * ```
@@ -322,7 +322,7 @@ export class NumberLiteral extends Node<SyntaxKind.NumberLiteral> implements Tex
 
 /**
  * Represents a Unicode character literal in one of two forms:
- * ```grammarkdown
+ * ```requirement-interpreter
  * <TAB>
  * U+0000
  * ```
@@ -340,8 +340,8 @@ export class UnicodeCharacterLiteral extends Node<SyntaxKind.UnicodeCharacterLit
 }
 
 /**
- * Represents a terminal token in the grammar.
- * ```grammarkdown
+ * Represents a terminal token in the interpreter.
+ * ```requirement-interpreter
  * `yield`
  * ```
  * {@docCategory Nodes}
@@ -383,7 +383,7 @@ export type TextContentNode =
 
 /**
  * Represents a set of symbols in a `lookahead` assertion.
- * ```grammarkdown
+ * ```requirement-interpreter
  * [lookahead ∈ { `a`, `b` }]
  * ```
  * {@docCategory Nodes}
@@ -446,7 +446,7 @@ export class SymbolSet extends Node<SyntaxKind.SymbolSet> {
 
 /**
  * Represents a set of constraints for a right-hand-side of a Production.
- * ```grammarkdown
+ * ```requirement-interpreter
  * Production[A] ::
  *   [+A] A
  *   [~A] B
@@ -518,7 +518,7 @@ export abstract class LexicalSymbolBase<TKind extends LexicalSymbolKind> extends
 }
 
 /**
- * Represents a placeholder symbol (`@`) used in some grammars.
+ * Represents a placeholder symbol (`@`) used in some interpreter.
  * {@docCategory Nodes}
  */
 export class PlaceholderSymbol extends LexicalSymbolBase<SyntaxKind.PlaceholderSymbol> {
@@ -548,7 +548,7 @@ export class PlaceholderSymbol extends LexicalSymbolBase<SyntaxKind.PlaceholderS
 
 /**
  * Represents a range of unicode characters.
- * ```grammarkdown
+ * ```requirement-interpreter
  * U+0000 through U+001F
  * ```
  * {@docCategory Nodes}
@@ -610,7 +610,7 @@ export class UnicodeCharacterRange extends LexicalSymbolBase<SyntaxKind.UnicodeC
 
 /**
  * The \`but not\` operator allows you to reference a *Nonterminal* on the left, excluding some part of that production.
- * ```grammarkdown
+ * ```requirement-interpreter
  * A but not B
  * ```
  * {@docCategory Nodes}
@@ -677,8 +677,8 @@ export class ButNotSymbol extends LexicalSymbolBase<SyntaxKind.ButNotSymbol> {
 }
 
 /**
- * Represents a section of Prose, which indicates handling of syntax outside the scope of the Grammarkdown parser.
- * ```grammarkdown
+ * Represents a section of Prose, which indicates handling of syntax outside the scope of the requirement-interpreter parser.
+ * ```requirement-interpreter
  * > This is a section of Prose with |Nonterminals| and `terminals`
  * ```
  * {@docCategory Nodes}
@@ -735,7 +735,7 @@ export class Prose extends LexicalSymbolBase<SyntaxKind.Prose> {
 
 /**
  * Represents a set of symbols used to restrict a `but not` operator.
- * ```grammarkdown
+ * ```requirement-interpreter
  * A but not one of `a` or `b`
  * ```
  * {@docCategory Nodes}
@@ -840,8 +840,8 @@ export abstract class OptionalSymbolBase<TKind extends OptionalSymbolKind> exten
 }
 
 /**
- * Represents a terminal token in the grammar.
- * ```grammarkdown
+ * Represents a terminal token in the interpreter.
+ * ```requirement-interpreter
  * `yield` `*`?
  * ```
  * {@docCategory Nodes}
@@ -894,7 +894,7 @@ export class Terminal extends OptionalSymbolBase<SyntaxKind.Terminal> {
 
 /**
  * Represents a non-terminal reference to another Production.
- * ```grammarkdown
+ * ```requirement-interpreter
  * IdentifierReference[~Yield, ~Await]
  * ```
  * {@docCategory Nodes}
@@ -984,7 +984,7 @@ export abstract class AssertionBase<TKind extends AssertionKind, TBracket extend
 
 /**
  * Represents the `empty` assertion, which matches exactly zero tokens.
- * ```grammarkdown
+ * ```requirement-interpreter
  * [empty]
  * ```
  * {@docCategory Nodes}
@@ -1036,7 +1036,7 @@ export class EmptyAssertion extends AssertionBase<SyntaxKind.EmptyAssertion, Syn
 
 /**
  * Represents a `lookahead` assertion, which is a zero-width assertion that only matches if the next token is in the requested set.
- * ```grammarkdown
+ * ```requirement-interpreter
  * [lookahead ∉ { `class`, `let` }]
  * ```
  * {@docCategory Nodes}
@@ -1106,7 +1106,7 @@ export class LookaheadAssertion extends AssertionBase<SyntaxKind.LookaheadAssert
 
 /**
  * Represens a `lexical-goal` assertion which verifies that current lexical goal is the supplied *Nonterminal*.
- * ```grammarkdown
+ * ```requirement-interpreter
  * [lexical goal Module]
  * ```
  * {@docCategory Nodes}
@@ -1176,7 +1176,7 @@ export class LexicalGoalAssertion extends AssertionBase<SyntaxKind.LexicalGoalAs
 
 /**
  * Represents a `no Symbol here` assertion, which disallows the provided symbol.
- * ```grammarkdown
+ * ```requirement-interpreter
  * [no LineTerminator here]
  * ```
  * {@docCategory Nodes}
@@ -1245,8 +1245,8 @@ export class NoSymbolHereAssertion extends AssertionBase<SyntaxKind.NoSymbolHere
 }
 
 /**
- * Represents an assertion containing Prose, which indicates handling of syntax outside the scope of the Grammarkdown parser.
- * ```grammarkdown
+ * Represents an assertion containing Prose, which indicates handling of syntax outside the scope of the requirement-interpreter parser.
+ * ```requirement-interpreter
  * HexDigits [> but only if MV of |HexDigits| > 0x10FFFF]
  * ```
  * {@docCategory Nodes}

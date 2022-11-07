@@ -1,6 +1,6 @@
 // @full: true
 //
-// Lexical grammar
+// Lexical interpreter
 //
 SourceCharacter ::
 	> any Unicode code point
@@ -102,7 +102,7 @@ ProseChar ::
 	SourceCharacter but not LineTerminator
 
 //
-// Syntactic grammar
+// Syntactic interpreter
 //
 Identifier :
 	IdentifierName but not ReservedWord

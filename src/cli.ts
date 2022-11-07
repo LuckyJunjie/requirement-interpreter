@@ -9,7 +9,7 @@ import * as performance from "./performance";
 import { EOL } from "os";
 import { Package } from "./read-package";
 import { CompilerOptions, EmitFormat, getDefaultOptions, KnownOptions, ParsedArguments, parse, usage, NewLineKind } from "./options";
-import { Grammar } from "./grammar";
+import { Interpreter } from "./interpreter";
 import { mapFromObject } from "./core";
 
 try {
@@ -32,7 +32,7 @@ const knownOptions: KnownOptions = {
     }), description: "The line terminator to use during emit." },
     "noEmit": { type: "boolean", description: "Does not emit output." },
     "noEmitOnError": { type: "boolean", description: "Does not emit output if there are errors." },
-    "noChecks": { type: "boolean", description: "Does not perform static checking of the grammar." },
+    "noChecks": { type: "boolean", description: "Does not perform static checking of the interpreter." },
     "noStrictParametricProductions": { type: "boolean", description: "Does not perform strict checking of parametric productions and nonterminals." },
     "noUnusedParameters": { type: "boolean", description: "Disallow unused parameters in productions." },
     "emitLinks": { type: "boolean", hidden: true },
@@ -63,10 +63,10 @@ function printUsage(): void {
     const node_package = <Package>require("../package.json");
     usage(knownOptions, 36, (writer) => {
         writer.writeln(`Version ${node_package.version}`);
-        writer.writeOption("Syntax:", "grammarkdown [options] [...files]");
+        writer.writeOption("Syntax:", "requirement-interpreter [options] [...files]");
         writer.writeln();
-        writer.writeOption("Examples:", "grammarkdown es6.grammar");
-        writer.writeOption("", "grammarkdown --out es6.md --format markdown es6.grammar");
+        writer.writeOption("Examples:", "requirement-interpreter es6.interpreter");
+        writer.writeOption("", "requirement-interpreter --out es6.md --format markdown es6.interpreter");
         writer.writeln();
         writer.writeln("Options:");
     });
@@ -92,20 +92,20 @@ async function performCompilation(options: ParsedCommandLine): Promise<void> {
     performance.mark("beforeCompile");
 
     const inputFiles = options.rest;
-    const grammar = new Grammar(inputFiles, compilerOptions);
-    await grammar.bind();
-    await grammar.check();
+    const interpreter = new Interpreter(inputFiles, compilerOptions);
+    await interpreter.bind();
+    await interpreter.check();
 
     if (!compilerOptions.noEmit) {
-        if (!compilerOptions.noEmitOnError || grammar.diagnostics.size <= 0) {
-            await grammar.emit();
+        if (!compilerOptions.noEmitOnError || interpreter.diagnostics.size <= 0) {
+            await interpreter.emit();
         }
     }
 
     performance.mark("afterCompile");
     performance.measure("compile", "beforeCompile", "afterCompile");
 
-    grammar.diagnostics.forEach(message => console.log(message));
+    interpreter.diagnostics.forEach(message => console.log(message));
 
     if (compilerOptions.diagnostics) {
         process.stderr.write(`ioRead:  ${Math.round(performance.getDuration("ioRead"))}ms${EOL}`);
@@ -116,7 +116,7 @@ async function performCompilation(options: ParsedCommandLine): Promise<void> {
         process.stderr.write(`emit:    ${Math.round(performance.getDuration("emit"))}ms${EOL}`);
     }
 
-    if (grammar.diagnostics.size > 0) {
+    if (interpreter.diagnostics.size > 0) {
         process.exit(-1);
     }
 }

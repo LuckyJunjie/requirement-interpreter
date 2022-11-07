@@ -12,7 +12,7 @@
 // import "./navigator-tests";
 // import "./checker-tests";
 // import "./emitter-tests";
-// import "./grammar-tests";
+// import "./interpreter-tests";
 // import "./cli-tests";
 // import "./lineOffsetMap-tests";
 

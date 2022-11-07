@@ -1,23 +1,23 @@
-# grammarkdown
+# requirement-interpreter
 
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url]
 
 ## Summary
 
-`grammarkdown` is a markdown-style parser for syntactic grammars, designed to make it easily to rapidly prototype a grammar and statically verify its consistency.
-The grammar supported by `grammarkdown` is based on the parametric grammar used by ECMA-262 (the JavaScript language standard).
+`requirement-interpreter` is a markdown-style parser for syntactic requirements interpreters, designed to make it easily to rapidly prototype a requirement and statically verify its consistency.
+The grammar supported by `requirement-interpreter` is based on the parametric grammar used by ECMA-262 (the JavaScript language standard).
 
 ## Usage
 ```
-Syntax:                   grammarkdown [options] [...files]
+Syntax:                   requirement-interpreter [options] [...files]
 
-Examples:                 grammarkdown es6.grammar
-                          grammarkdown --out es6.md --format markdown es6.grammar
+Examples:                 requirement-interpreter es6.interpreter
+                          requirement-interpreter --out es6.md --format markdown es6.interpreter
 
 Options:
  -f, --format FORMAT      The output format.
  -h, --help               Prints this message.
-     --noChecks           Does not perform static checking of the grammar.
+     --noChecks           Does not perform static checking of the interpreter.
      --noEmit             Does not emit output.
      --noEmitOnError      Does not emit output if there are errors.
  -o, --out FILE           Specify the output file.
@@ -26,7 +26,7 @@ Options:
 
 ## Syntax
 
-A `grammarkdown` grammar file uses significant whitespace in the form of line terminators and indentation. Tab (ASCII 0x9) characters are preferred,
+A `requirement-interpreter` interpreter file uses significant whitespace in the form of line terminators and indentation. Tab (ASCII 0x9) characters are preferred,
 however using multiple spaces for indentation is supported as long as all nested elements have the same amount of leading whitespace.
 
 #### Productions
@@ -168,7 +168,7 @@ A *lookahead assertion* has the following operators:
 
 #### Linking
 
-During emit, `grammarkdown` implicitly adds a generated name for each *Production* and *Right-hand side* that can be used to
+During emit, `requirement-interpreter` implicitly adds a generated name for each *Production* and *Right-hand side* that can be used to
 link directly to the production using a URI fragment. You can explicitly set the name for a production by tagging it with a custom link name:
 
 ```
@@ -184,42 +184,42 @@ You can also annotate your grammar with C-style single-line and multi-line comme
 
 #### Examples
 
-For comprehensive examples of `grammarkdown` syntax and output, you can review the following samples:
+For comprehensive examples of `requirement-interpreter` syntax and output, you can review the following samples:
 
 * ECMA-262 version 2015 (ES6) Grammar
-  * [Plain-text](https://github.com/rbuckton/grammarkdown/blob/master/spec/es6.grammar)
-  * [HTML](https://rbuckton.github.io/grammarkdown/es6.html)
+  * [Plain-text](https://github.com/rbuckton/requirement-interpreter/blob/master/spec/es6.interpreter)
+  * [HTML](https://rbuckton.github.io/requirement-interpreter/es6.html)
 * TypeScript 1.5 Supplemental Grammar
-  * [Plain-text](https://github.com/rbuckton/grammarkdown/blob/master/spec/typescript.grammar)
-  * [HTML](https://rbuckton.github.io/grammarkdown/typescript.html)
+  * [Plain-text](https://github.com/rbuckton/requirement-interpreter/blob/master/spec/typescript.interpreter)
+  * [HTML](https://rbuckton.github.io/requirement-interpreter/typescript.html)
 
 ## API
 
-`grammarkdown` has an API that can be consumed:
+`requirement-interpreter` has an API that can be consumed:
 
 ```js
-var grammarkdown = require("grammarkdown")
-  , Grammar = grammarkdown.Grammar
-  , EmitFormat = grammarkdown.EmitFormat
+var requirement-interpreter = require("requirement-interpreter")
+  , Interpreter = requirement-interpreter.Interpreter
+  , EmitFormat = requirement-interpreter.EmitFormat
 
 var filename = "...";
 var source = "...";
 var output;
 
 // parse
-var grammar = new Grammar(
+var interpreter = new Interpreter(
   [filename],
   { format: EmitFormat.markdown },
   function () { return source; });
 
 // bind (optional, bind happens automatically during check)
-grammar.bind();
+interpreter.bind();
 
 // check (optional, check happens automatically during emit)
-grammar.check();
+interpreter.check();
 
 // emit
-grammar.emit(undefined, function (file, text) { output = text; });
+interpreter.emit(undefined, function (file, text) { output = text; });
 
 console.log(output);
 ```
@@ -228,8 +228,8 @@ console.log(output);
 
 * [ecmarkup](https://bterlson.github.io/ecmarkup)
 
-[npm-image]: https://img.shields.io/npm/v/grammarkdown.svg
-[npm-url]: https://npmjs.org/package/grammarkdown
+[npm-image]: https://img.shields.io/npm/v/requirement-interpreter.svg
+[npm-url]: https://npmjs.org/package/requirement-interpreter
 
-[travis-image]: https://travis-ci.org/rbuckton/grammarkdown.svg?branch=master
-[travis-url]: https://travis-ci.org/rbuckton/grammarkdown
+[travis-image]: https://travis-ci.org/rbuckton/requirement-interpreter.svg?branch=master
+[travis-url]: https://travis-ci.org/rbuckton/requirement-interpreter

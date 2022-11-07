@@ -11,8 +11,8 @@ import { CancelToken } from "@esfx/async-canceltoken";
 import { Disposable } from '@esfx/disposable';
 
 
-// NOTE: grammarkdown requires a minimum of ES5.
-if (typeof Object.create !== "function") throw new Error("Grammarkdown requires a minimum host engine of ES5.");
+// NOTE: requirement-interpreter requires a minimum of ES5.
+if (typeof Object.create !== "function") throw new Error("requirement-interpreter requires a minimum host engine of ES5.");
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 

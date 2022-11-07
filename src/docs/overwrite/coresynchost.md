@@ -1,15 +1,15 @@
 ---
-uid: 'grammarkdown!CoreSyncHost:class'
+uid: 'requirement-interpreter!CoreSyncHost:class'
 example:
   - *content
 ---
 
-The following example shows how you can create a @grammarkdown!CoreSyncHost:class from a `Map`:
+The following example shows how you can create a @requirement-interpreter!CoreSyncHost:class from a `Map`:
 
 ```ts
 const files = new Map([
-  ["a.grammar", "..."],
-  ["b.grammar", "..."]
+  ["a.interpreter", "..."],
+  ["b.interpreter", "..."]
 ]);
 const host = new CoreSyncHost({
   ignoreCase: false,
@@ -20,12 +20,12 @@ const host = new CoreSyncHost({
 ```
 
 ---
-uid: 'grammarkdown!CoreSyncHost.forFile:member(1)'
+uid: 'requirement-interpreter!CoreSyncHost.forFile:member(1)'
 example:
   - *content
 ---
 
-The following example shows how you can create a @grammarkdown!CoreSyncHost:class for a `string`:
+The following example shows how you can create a @requirement-interpreter!CoreSyncHost:class for a `string`:
 
 ```ts
 const content = "...";

@@ -1,0 +1,68 @@
+
+requirement ::
+    subtask
+
+subtask ::
+    subtask1
+    subtask2
+
+subtask1::
+    subtask1Description
+    subtask1checker
+    subtask1defma
+
+
+subtask1Description ::
+    > start rf diagnostic test
+
+subtask1checker ::
+    subtask1checker1 but not 1
+    subtask1checker2 but not 2
+
+subtask1checker1 ::
+    > check rf diagnostic test 321 but not result table , TestCheckPoint
+
+subtask1checker2 ::
+    > check rf diagnostic test but not result table , TestCheckPoint
+
+subtask1defma ::
+    subtask1defma1
+    subtask1defma2
+
+
+subtask1defma1 ::
+    > issues need to be checked for subtask1 defma finding, TestCheckPoint
+
+subtask1defma2 ::
+    > issues need to be checked for subtask1 defma finding, TestCheckPoint
+
+
+subtask2 ::
+    subtask2Description
+    subtask2checker
+    subtask2defma
+
+
+subtask2Description ::
+    > start rf diagnostic test
+
+subtask2checker ::
+    subtask2checker1
+    subtask2checker2
+
+subtask2checker1 ::
+    > check rf diagnostic test result table, TestCheckPoint
+
+subtask2checker2 ::
+    > check rf diagnostic test result table, TestCheckPoint
+
+subtask2defma ::
+    subtask2defma1
+    subtask2defma2
+
+
+subtask2defma1 ::
+    > issues need to be checked for subtask1 defma finding, TestCheckPoint
+
+subtask2defma2 :: 
+    > issues need to be checked for subtask1 defma finding, TestCheckPoint

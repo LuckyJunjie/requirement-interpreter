@@ -49,8 +49,8 @@ import {
 } from "../nodes";
 
 /** {@docCategory Emit} */
-export class GrammarkdownEmitter extends Emitter {
-    protected override extension = ".grammar";
+export class RequirementInterpreterEmitter extends Emitter {
+    protected override extension = ".interpreter";
 
     protected override emitSourceFile(node: SourceFile) {
         let lastElement: SourceElement | undefined;

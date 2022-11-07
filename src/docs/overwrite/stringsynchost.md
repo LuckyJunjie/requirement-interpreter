@@ -1,3 +1,3 @@
 ---
-uid: 'grammarkdown!StringSyncHost:class'
+uid: 'requirement-interpreter!StringSyncHost:class'
 ---

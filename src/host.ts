@@ -45,11 +45,11 @@ export interface CoreAsyncHostOptions {
      */
     ignoreCase?: boolean;
     /**
-     * A set of known grammars in the form `{ "name": "path" }`
+     * A set of known interpreter in the form `{ "name": "path" }`
      */
     knownGrammars?: Record<string, string>;
     /**
-     * Indicates whether to include builtin grammars in the set of known grammars.
+     * Indicates whether to include builtin interpreter in the set of known interpreter.
      */
     useBuiltinGrammars?: boolean;
     /**
@@ -61,7 +61,7 @@ export interface CoreAsyncHostOptions {
      */
     resolveFile?: (this: void, file: string, referrer: string | undefined, fallback: (file: string, referrer?: string) => string) => string;
     /**
-     * A callback used to control known grammar resolution.
+     * A callback used to control known interpreter resolution.
      */
     resolveKnownGrammar?: (this: void, name: string, fallback: (name: string) => string | undefined) => string | undefined;
     /**
@@ -75,8 +75,8 @@ export interface CoreAsyncHostOptions {
 }
 
 /**
- * A Host is a user-provided service that indicates how various Grammarkdown services
- * can interact with a file system. The `CoreAsyncHost` class provides the API surface that Grammarkdown
+ * A Host is a user-provided service that indicates how various requirement-interpreter services
+ * can interact with a file system. The `CoreAsyncHost` class provides the API surface that requirement-interpreter
  * uses to interact with a host that is able to access the file system asynchronously.
  *
  * {@docCategory Hosts}
@@ -150,7 +150,7 @@ export class CoreAsyncHost {
      * @param file The file name for the content.
      * @param hostFallback An optional host to use as a fallback for operations not supported by this host.
      */
-    public static forFile(content: PromiseLike<string> | string, file = "file.grammar", hostFallback?: CoreAsyncHost) {
+    public static forFile(content: PromiseLike<string> | string, file = "file.interpreter", hostFallback?: CoreAsyncHost) {
         return new StringAsyncHost(file, content, hostFallback);
     }
 
@@ -172,8 +172,8 @@ export class CoreAsyncHost {
     }
 
     /**
-     * Returns the path for a known or built-in grammar based on its name (i.e., `"es2015"`, etc.)
-     * @param name The name of the grammar.
+     * Returns the path for a known or built-in interpreter based on its name (i.e., `"es2015"`, etc.)
+     * @param name The name of the interpreter.
      */
     public resolveKnownGrammar(name: string) {
         return this.resolveKnownGrammarCore(name)
@@ -181,9 +181,9 @@ export class CoreAsyncHost {
     }
 
     /**
-     * Registers a known grammar for use with `@import` directives.
-     * @param name The name for the grammar.
-     * @param file The file path of the grammar.
+     * Registers a known interpreter for use with `@import` directives.
+     * @param name The name for the interpreter.
+     * @param file The file path of the interpreter.
      */
     public registerKnownGrammar(name: string, file: string) {
         this.registerKnownGrammarCore(name, file);
@@ -310,8 +310,8 @@ export class CoreAsyncHost {
     }
 
     /**
-     * When overridden in a derived class, returns the path for a known or built-in grammar based on its name (i.e., `"es2015"`, etc.)
-     * @param name The name of the grammar.
+     * When overridden in a derived class, returns the path for a known or built-in interpreter based on its name (i.e., `"es2015"`, etc.)
+     * @param name The name of the interpreter.
      * @virtual
      */
     protected resolveKnownGrammarCore(name: string): string | undefined {
@@ -327,13 +327,13 @@ export class CoreAsyncHost {
     }
 
     /**
-     * When overridden in a derived clas, registers a known grammar for use with `@import` directives.
-     * @param name The name for the grammar.
-     * @param file The file path of the grammar.
+     * When overridden in a derived clas, registers a known interpreter for use with `@import` directives.
+     * @param name The name for the interpreter.
+     * @param file The file path of the interpreter.
      * @virtual
      */
     protected registerKnownGrammarCore(name: string, file: string) {
-        if (this._hostFallback) throw new Error("Known grammars must be registered on the fallback host.");
+        if (this._hostFallback) throw new Error("Known interpreter must be registered on the fallback host.");
         (this._knownGrammars ??= new Map()).set(name.toUpperCase(), file);
     }
 
@@ -420,11 +420,11 @@ let builtinGrammars: Map<string, string> | undefined;
 function resolveBuiltInGrammar(name: string) {
     if (!builtinGrammars) {
         builtinGrammars = new Map<string, string>([
-            ["ES6", require.resolve("../grammars/es2015.grammar")],
-            ["ES2015", require.resolve("../grammars/es2015.grammar")],
-            ["ES2020", require.resolve("../grammars/es2020.grammar")],
-            ["TS", require.resolve("../grammars/typescript.grammar")],
-            ["TYPESCRIPT", require.resolve("../grammars/typescript.grammar")],
+            ["ES6", require.resolve("../interpreter/es2015.interpreter")],
+            ["ES2015", require.resolve("../interpreter/es2015.interpreter")],
+            ["ES2020", require.resolve("../interpreter/es2020.interpreter")],
+            ["TS", require.resolve("../interpreter/typescript.interpreter")],
+            ["TYPESCRIPT", require.resolve("../interpreter/typescript.interpreter")],
         ]);
     }
     return builtinGrammars.get(name.toUpperCase());

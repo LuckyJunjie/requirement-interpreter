@@ -135,7 +135,7 @@ export class Emitter {
         }
         else {
             const dirname = path.dirname(node.filename);
-            const basename = path.basename(node.filename, ".grammar");
+            const basename = path.basename(node.filename, ".interpreter");
             return path.join(dirname, basename + extension);
         }
     }
@@ -191,6 +191,7 @@ export class Emitter {
             case SyntaxKind.Constraints: this.emitConstraints(<Constraints>node); break;
             case SyntaxKind.SymbolSpan: this.emitSymbolSpan(<SymbolSpan>node); break;
             case SyntaxKind.ThroughKeyword: this.emitKeyword(node); break;
+            case SyntaxKind.TestCheckPointKeyword: this.emitCheckPointKeyword(node); break;
             case SyntaxKind.ButNotSymbol: this.emitButNotSymbol(<ButNotSymbol>node); break;
             case SyntaxKind.OneOfSymbol: this.emitOneOfSymbol(<OneOfSymbol>node); break;
             case SyntaxKind.Nonterminal: this.emitNonterminal(<Nonterminal>node); break;
@@ -238,6 +239,11 @@ export class Emitter {
         this.emitToken(node);
     }
 
+    protected emitCheckPointKeyword(node: Node) {
+        this.writer.write('This is a test check point, should design a test case!');
+        this.emitToken(node);
+    }
+
     protected emitToken(node: Node | undefined) {
         if (node) {
             this.emitTokenKind(node.kind);
@@ -245,6 +251,10 @@ export class Emitter {
     }
 
     protected emitTokenKind(kind: SyntaxKind) {
+        if (kind === SyntaxKind.ButNotSymbol)
+        {
+            this.writer.write('TEST CHECK POINT!');
+        }
         this.writer.write(tokenToString(kind));
     }
 

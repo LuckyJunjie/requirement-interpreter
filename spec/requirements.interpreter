@@ -1,7 +1,7 @@
 //
 // Lexical grammar
 //
-SourceCharacter ::
+SourceCharacter ~
 	> any Unicode code point
 
 LineTerminator ::
@@ -9,6 +9,16 @@ LineTerminator ::
 	<CR>
 	<LS>
 	<PS>
+
+HelloGrammar ::
+	test1 
+	test2
+
+test1 ::
+	> test 1 content
+
+test2 :: 
+	> test 2 content
 
 IdentifierName ::
 	IdentifierStart

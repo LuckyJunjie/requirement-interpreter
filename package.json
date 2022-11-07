@@ -1,10 +1,9 @@
 {
-  "name": "grammarkdown",
-  "version": "3.2.0",
-  "description": "Markdown-like DSL for defining syntactic grammars for programming languages.",
+  "name": "requirement-interpreter",
+  "version": "1.0.0",
+  "description": "This is a tool provide DSL for requirements tracing, the tool created based on Ron Buckton(rbuckton@chronicles.org)'s grammarkdown https://github.com/rbuckton/grammarkdown.git",
   "license": "MIT",
   "keywords": [
-    "grammar",
     "language",
     "syntax",
     "dsl",
@@ -12,23 +11,13 @@
     "typescript",
     "ecmascript"
   ],
-  "author": {
-    "name": "Ron Buckton",
-    "email": "rbuckton@chronicles.org",
-    "url": "http://github.com/rbuckton"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rbuckton/grammarkdown.git"
-  },
-  "bugs": {
-    "url": "https://github.com/rbuckton/grammarkdown/issues"
-  },
-  "homepage": "https://github.com/rbuckton/grammarkdown",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "bin": {
-    "grammarkdown": "./bin/grammarkdown"
+    "requirement-interpreter": "./bin/requirement-interpreter"
+  },
+  "directories": {
+    "doc": "docs"
   },
   "scripts": {
     "test": "gulp test",
@@ -36,6 +25,12 @@
     "prepublishOnly": "gulp --series build test",
     "prepare-docs": "gulp prepare-docs"
   },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "homepage": "",
   "devDependencies": {
     "@microsoft/api-documenter": "^7.8.55",
     "@microsoft/api-extractor": "^7.9.21",

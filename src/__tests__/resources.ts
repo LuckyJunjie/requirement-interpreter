@@ -82,7 +82,7 @@ function collectFilesInPath(path: string, relative: string, output: TestFile[]) 
             const fileRelative = relative ? posix.join(relative, file) : file;
             const stats = statSync(filePath);
             if (stats.isFile()) {
-                if (extname(file) === ".grammar") {
+                if (extname(file) === ".interpreter") {
                     const { options, content } = parseTestFile(readFileSync(filePath, "utf8"));
                     output.push({ basename: file, path: filePath, relative: fileRelative, content, options });
                 }

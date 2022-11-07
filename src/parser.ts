@@ -710,6 +710,10 @@ export class Parser {
                 if (!fragments) fragments = [];
                 fragments.push(this.parseNonterminal(/*allowArgumentList*/ false, /*allowOptional*/ false));
             }
+            else if (this.token === SyntaxKind.TestCheckPointKeyword) {
+                if (!fragments) fragments = [];
+                fragments.push(this.parseNonterminal(/*allowArgumentList*/ false, /*allowOptional*/ false));
+            }
             else {
                 break;
             }
@@ -1223,7 +1227,7 @@ function isInvalidConstraintTailRecoveryToken(scanner: Scanner) {
 function isProductionSeparatorToken(token: SyntaxKind): token is ProductionSeperatorKind {
     return token === SyntaxKind.ColonToken
         || token === SyntaxKind.ColonColonToken
-        || token === SyntaxKind.ColonColonColonToken;
+        || token === SyntaxKind.ColonColonColonToken || token === SyntaxKind.TildeToken;
 }
 
 function isLeadingArgumentToken(token: SyntaxKind): token is ArgumentOperatorKind {

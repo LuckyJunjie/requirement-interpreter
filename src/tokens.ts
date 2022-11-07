@@ -207,6 +207,9 @@ export enum SyntaxKind {
     ThroughKeyword,
     TrueKeyword, // LastKeyword, LastToken
 
+    // Requirements trace Keywords
+    TestCheckPointKeyword,
+
     // TextContent, Literals
     StringLiteral, // FirstLiteral, FirstTextContent
     NumberLiteral,
@@ -370,7 +373,8 @@ export type LookaheadOperatorKind =
 export type ProductionSeperatorKind =
     | SyntaxKind.ColonToken
     | SyntaxKind.ColonColonToken
-    | SyntaxKind.ColonColonColonToken;
+    | SyntaxKind.ColonColonColonToken
+    | SyntaxKind.TildeToken;
 
 export type ParameterOperatorKind =
     | SyntaxKind.PlusToken
@@ -592,6 +596,7 @@ const textToToken = new Map<string, SyntaxKind>([
     ["or", SyntaxKind.OrKeyword],
     ["through", SyntaxKind.ThroughKeyword],
     ["true", SyntaxKind.TrueKeyword],
+    ["TestCheckPoint", SyntaxKind.TestCheckPointKeyword],
 ]);
 
 const tokenToText = new Map<SyntaxKind, string>([...textToToken]

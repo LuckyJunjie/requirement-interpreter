@@ -9,6 +9,6 @@ API operations using an asynchronous host use the native ECMAScript `Promise` to
 
 # Host Class Hierarchy
 
-- @grammarkdown!CoreAsyncHost:class
-  - @grammarkdown!NodeAsyncHost:class
-  - @grammarkdown!StringAsyncHost:class
+- @requirement-interpreter!CoreAsyncHost:class
+  - @requirement-interpreter!NodeAsyncHost:class
+  - @requirement-interpreter!StringAsyncHost:class

@@ -32,7 +32,7 @@ const perFileTrailingTokensMap = new WeakMap<SourceFile, Map<Node, readonly Toke
  * {@docCategory Compiler}
  *
  * @remarks
- * Nodes in Grammarkdown's syntax tree are immutable and do not maintain pointers to their parents.
+ * Nodes in requirement-interpreter's syntax tree are immutable and do not maintain pointers to their parents.
  * This can make traversing through a document somewhat difficult. The NodeNavigator class is intended
  * to improve this process by providing an API that can traverse a syntax tree starting from the root.
  *
@@ -934,8 +934,8 @@ export class NodeNavigator {
     }
 
     /**
-     * Moves the focus of the navigator to the {@link Node} that contains the provided [Position](xref:grammarkdown!Position:interface).
-     * @param position The [Position](xref:grammarkdown!Position:interface) at which to focus the navigator.
+     * Moves the focus of the navigator to the {@link Node} that contains the provided [Position](xref:requirement-interpreter!Position:interface).
+     * @param position The [Position](xref:requirement-interpreter!Position:interface) at which to focus the navigator.
      * @param outermost When `true`, moves to the outermost node containing the provided position.
      * When `false` or not specified, moves to the innermost node containing the provided position.
      * @returns `true` if the navigator's focus changed; otherwise, `false`.
@@ -970,15 +970,15 @@ export class NodeNavigator {
     }
 
     /**
-     * Moves the focus of the navigator to the nearest {@link Token}, {@link TextContentNode}, or {@link InvalidSymbol} that is touching the provided [Position](xref:grammarkdown!Position:interface).
-     * @param position The [Position](xref:grammarkdown!Position:interface) at which to focus the navigator.
+     * Moves the focus of the navigator to the nearest {@link Token}, {@link TextContentNode}, or {@link InvalidSymbol} that is touching the provided [Position](xref:requirement-interpreter!Position:interface).
+     * @param position The [Position](xref:requirement-interpreter!Position:interface) at which to focus the navigator.
      * @param predicate A callback used to match a token node.
      * @returns `true` if the navigator's focus changed; otherwise, `false`.
      */
     public moveToTouchingToken(position: Position, predicate?: SyntaxKind): boolean;
     /**
-     * Moves the focus of the navigator to the nearest {@link Token}, {@link TextContentNode}, or {@link InvalidSymbol} that is touching the provided [Position](xref:grammarkdown!Position:interface).
-     * @param position The [Position](xref:grammarkdown!Position:interface) at which to focus the navigator.
+     * Moves the focus of the navigator to the nearest {@link Token}, {@link TextContentNode}, or {@link InvalidSymbol} that is touching the provided [Position](xref:requirement-interpreter!Position:interface).
+     * @param position The [Position](xref:requirement-interpreter!Position:interface) at which to focus the navigator.
      * @param kind The {@link SyntaxKind} that the previous token must match.
      * @returns `true` if the navigator's focus changed; otherwise, `false`.
      */

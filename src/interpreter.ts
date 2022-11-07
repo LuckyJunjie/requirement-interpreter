@@ -22,10 +22,10 @@ import { NodeAsyncHost } from "./hosts/node";
 import { getSourceFileAccessor } from "./nodeInternal";
 
 /**
- * The primary service used to interact with one or more Grammarkdown {@link SourceFile|SourceFiles}.
+ * The primary service used to interact with one or more requirement-interpreter {@link SourceFile|SourceFiles}.
  * {@docCategory Compiler}
  */
-export class Grammar {
+export class Interpreter {
     private _bindings: BindingTable | undefined;
     private _rootNames: Iterable<string> | undefined;
     private _parseState: ParseState | undefined;
@@ -38,22 +38,22 @@ export class Grammar {
     private _writeFileFallback = (file: string, content: string, cancelToken?: CancelToken) => this.writeFile(file, content, cancelToken);
 
     /**
-     * The {@link CompilerOptions} used by the grammar.
+     * The {@link CompilerOptions} used by the interpreter.
      */
     public readonly options: Readonly<CompilerOptions>;
     /**
-     * The {@link CoreAsyncHost} the grammar uses to interact with the file system.
+     * The {@link CoreAsyncHost} the interpreter uses to interact with the file system.
      */
     public readonly host: CoreAsyncHost;
     /**
-     * The diagnostic messages produced by the grammar.
+     * The diagnostic messages produced by the interpreter.
      */
     public readonly diagnostics: DiagnosticMessages = new DiagnosticMessages(this._lineOffsetMap);
 
     /**
-     * @param rootNames The names of the root files used by the grammar.
-     * @param options The {@link CompilerOptions} used by the grammar.
-     * @param host The [Host](xref:hosts) the grammar uses to interact with the file system.
+     * @param rootNames The names of the root files used by the interpreter.
+     * @param options The {@link CompilerOptions} used by the interpreter.
+     * @param host The [Host](xref:hosts) the interpreter uses to interact with the file system.
      */
     constructor(rootNames: Iterable<string>, options: CompilerOptions = getDefaultOptions(), host: CoreAsyncHost = new NodeAsyncHost()) {
         this._rootNames = rootNames;
@@ -62,71 +62,71 @@ export class Grammar {
     }
 
     /**
-     * Indicates whether the grammar has been parsed.
+     * Indicates whether the interpreter has been parsed.
      */
     public get isParsed(): boolean {
         return this._parseState !== undefined;
     }
 
     /**
-     * Indicates whether the grammar has been bound.
+     * Indicates whether the interpreter has been bound.
      */
     public get isBound(): boolean {
         return this._bindings !== undefined;
     }
 
     /**
-     * Gets the source files parsed by the grammar.
-     * @throws `Error` - Grammar has not yet been parsed.
+     * Gets the source files parsed by the interpreter.
+     * @throws `Error` - Interpreter has not yet been parsed.
      */
     public get sourceFiles(): readonly SourceFile[] {
-        if (!this._parseState) throw new Error("Grammar has not yet been parsed.");
+        if (!this._parseState) throw new Error("Interpreter has not yet been parsed.");
         return this._parseState.sourceFiles;
     }
 
     /**
-     * Gets the root files parsed by the grammar.
-     * @throws `Error` - Grammar has not yet been parsed.
+     * Gets the root files parsed by the interpreter.
+     * @throws `Error` - Interpreter has not yet been parsed.
      */
     public get rootFiles(): readonly SourceFile[] {
-        if (!this._parseState) throw new Error("Grammar has not yet been parsed.");
+        if (!this._parseState) throw new Error("Interpreter has not yet been parsed.");
         return this._parseState.rootFiles;
     }
 
     /**
      * Gets the resolver used to resolve references to bound nodes.
-     * @throws `Error` - Grammar has not yet been bound.
+     * @throws `Error` - Interpreter has not yet been bound.
      */
     public get resolver(): Resolver {
-        if (!this._bindings) throw new Error("Grammar has not yet been bound.");
+        if (!this._bindings) throw new Error("Interpreter has not yet been bound.");
         return this._innerResolver ??= this.createResolver(this._bindings);
     }
 
     /**
-     * Gets the {@link Binder} used to bind the grammar.
+     * Gets the {@link Binder} used to bind the interpreter.
      */
     protected get binder(): Binder {
         return this._innerBinder ??= this.createBinder(this.options);
     }
 
     /**
-     * Gets the {@link Checker} used to check the grammar.
+     * Gets the {@link Checker} used to check the interpreter.
      */
     protected get checker(): Checker {
         return this._innerChecker ??= this.createChecker(this.options);
     }
 
     /**
-     * Gets the {@link Emitter} used to emit the grammar.
+     * Gets the {@link Emitter} used to emit the interpreter.
      */
     protected get emitter(): Emitter {
         return this._innerEmitter ??= this.createEmitter(this.options);
     }
 
     /**
-     * Converts a string containing Grammarkdown syntax into output based on the provided options.
-     * @param content The Grammarkdown source text to convert.
-     * @param options The {@link CompilerOptions} used by the grammar.
+     * Converts a string containing requirement-interpreter syntax into output based on the provided options.
+     * @param content The requirement-interpreter source text to convert.
+     * @param options The {@link CompilerOptions} used by the interpreter.
      * @param hostFallback An optional host to use as a fallback for file system operations.
      * @param cancelable A cancelable object that can be used to abort the operation.
      */
@@ -135,13 +135,13 @@ export class Grammar {
         const { file, ...restOptions } = options;
         const host = CoreAsyncHost.forFile(content, file, hostFallback);
 
-        const grammar = new Grammar([host.file], restOptions, host);
-        await grammar.parse(cancelToken);
+        const interpreter = new Interpreter([host.file], restOptions, host);
+        await interpreter.parse(cancelToken);
 
-        const sourceFile = grammar.getSourceFile(host.file);
+        const sourceFile = interpreter.getSourceFile(host.file);
         if (!sourceFile) throw new Error(`Unable to resolve single file.`);
 
-        return await grammar.emitString(sourceFile, cancelToken);
+        return await interpreter.emitString(sourceFile, cancelToken);
     }
 
     /**
@@ -155,7 +155,7 @@ export class Grammar {
     }
 
     /**
-     * Asynchronously parses the root files provided to the grammar.
+     * Asynchronously parses the root files provided to the interpreter.
      * @param cancelable A cancelable object that can be used to abort the operation.
      * @returns A `Promise` that is settled when the operation has completed.
      */
@@ -179,7 +179,7 @@ export class Grammar {
     }
 
     /**
-     * Asynchronously binds each file in the grammar. Will also parse the grammar if it has not yet been parsed.
+     * Asynchronously binds each file in the interpreter. Will also parse the interpreter if it has not yet been parsed.
      * @param cancelable A cancelable object that can be used to abort the operation.
      * @returns A `Promise` that is settled when the operation has completed.
      */
@@ -201,7 +201,7 @@ export class Grammar {
     }
 
     /**
-     * Asynchronously checks each file in the grammar. Will also parse and bind the grammar if it has not yet been parsed or bound.
+     * Asynchronously checks each file in the interpreter. Will also parse and bind the interpreter if it has not yet been parsed or bound.
      * @param cancelable A cancelable object that can be used to abort the operation.
      * @returns A `Promise` that is settled when the operation has completed.
      */
@@ -232,9 +232,9 @@ export class Grammar {
     }
 
     /**
-     * Asynchronously emits each file in the grammar. Will also parse, bind, and check the grammar if it has not yet been parsed, bound, or checked.
+     * Asynchronously emits each file in the interpreter. Will also parse, bind, and check the interpreter if it has not yet been parsed, bound, or checked.
      * @param sourceFile The {@link SourceFile} to emit. If not provided, this method will generate output for all root files.
-     * @param writeFile An optional callback used to write the output. If not provided, this method will emit output via this grammar's {@link Grammar.host|host}.
+     * @param writeFile An optional callback used to write the output. If not provided, this method will emit output via this interpreter's {@link Interpreter.host|host}.
      * @param cancelable A cancelable object that can be used to abort the operation.
      * @returns A `Promise` that is settled when the operation has completed.
      */
@@ -256,7 +256,7 @@ export class Grammar {
     }
 
     /**
-     * Asynchronously emits the provided file in the grammar as a string. Will also parse, bind, and check the grammar if it has not yet been parsed, bound, or checked.
+     * Asynchronously emits the provided file in the interpreter as a string. Will also parse, bind, and check the interpreter if it has not yet been parsed, bound, or checked.
      * @param sourceFile The {@link SourceFile} to emit.
      * @param cancelable A cancelable object that can be used to abort the operation.
      * @returns A `Promise` for the emit output that is settled when the operation has completed.
@@ -270,7 +270,7 @@ export class Grammar {
     }
 
     /**
-     * When overridden in a derived class, creates a {@link Binder} to be used by this grammar.
+     * When overridden in a derived class, creates a {@link Binder} to be used by this interpreter.
      * @param options The options to pass on to the {@link Binder}.
      * @virtual
      */
@@ -279,7 +279,7 @@ export class Grammar {
     }
 
     /**
-     * When overridden in a derived class, creates a {@link Checker} to be used by this grammar.
+     * When overridden in a derived class, creates a {@link Checker} to be used by this interpreter.
      * @param options The options to pass on to the {@link Checker}.
      * @virtual
      */
@@ -288,7 +288,7 @@ export class Grammar {
     }
 
     /**
-     * When overridden in a derived class, creates a {@link Resolver} to be used by this grammar.
+     * When overridden in a derived class, creates a {@link Resolver} to be used by this interpreter.
      * @param bindings A {@link BindingTable} used by the resolver to resolve references to nodes.
      * @virtual
      */
@@ -297,7 +297,7 @@ export class Grammar {
     }
 
     /**
-     * When overridden in a derived class, creates an {@link Emitter} to be used by this grammar.
+     * When overridden in a derived class, creates an {@link Emitter} to be used by this interpreter.
      * @param options The options to pass on to the {@link Emitter}.
      * @virtual
      */

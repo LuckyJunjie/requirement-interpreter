@@ -19,11 +19,11 @@ export interface NodeAsyncHostOptions {
      */
     ignoreCase?: boolean;
     /**
-     * A set of known grammars in the form `{ "name": "path" }`
+     * A set of known interpreter in the form `{ "name": "path" }`
      */
     knownGrammars?: Record<string, string>;
     /**
-     * Indicates whether to include builtin grammars in the set of known grammars.
+     * Indicates whether to include builtin interpreter in the set of known interpreter.
      */
     useBuiltinGrammars?: boolean;
     readFile?: ReadFileCallback | false;
