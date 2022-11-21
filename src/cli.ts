@@ -11,7 +11,6 @@ import { Package } from "./read-package";
 import { CompilerOptions, EmitFormat, getDefaultOptions, KnownOptions, ParsedArguments, parse, usage, NewLineKind } from "./options";
 import { Interpreter } from "./interpreter";
 import { mapFromObject } from "./core";
-import { ExcelParser } from "./excelParser";
 
 try {
     require("source-map-support").install();
@@ -40,7 +39,6 @@ const knownOptions: KnownOptions = {
     "usage": { aliasFor: ["--help"], hidden: true },
     "md": { aliasFor: ["--format", "markdown"], hidden: true },
     "diagnostics": { type: "boolean", description: "Prints diagnostics information." },
-    "excelInputFile": { shortName: "e", param: "FILE", type: "file", description: "Specify the input excel file to generate .interpreter." },
 };
 
 interface ParsedCommandLine extends ParsedArguments, CompilerOptions {
@@ -88,12 +86,6 @@ async function performCompilation(options: ParsedCommandLine): Promise<void> {
     if (options.noStrictParametricProductions) compilerOptions.noStrictParametricProductions = true;
     if (options.emitLinks) compilerOptions.emitLinks = true;
     if (options.diagnostics) compilerOptions.diagnostics = true;
-    if (options.excelInputFile) compilerOptions.excelInput = options.excelInputFile;
-
-    process.stderr.write(`ioRead:  ${compilerOptions.excelInput}${EOL}`);
-
-    const excelParser = new ExcelParser(compilerOptions.excelInput);
-    excelParser.readExcel();
 
     compilerOptions.format = options.format || EmitFormat.markdown;
     compilerOptions.newLine = options.newLine;
