@@ -1,0 +1,256 @@
+- [1. Grooming information](#1-grooming-information)
+  - [RequirementId:LTE_OPR_REQ_26177](#requirementidlte_opr_req_26177)
+  - [RequirementId:TBD_0001](#requirementidtbd_0001)
+  - [RequirementId:LTE_OPR_REQ_26177](#requirementidlte_opr_req_26177-1)
+- [2. General Information](#2-general-information)
+- [3. Requirements(EFS)](#3-requirementsefs)
+- [4 UML Diagram](#4-uml-diagram)
+  - [4.1 ip traffic capture](#41-ip-traffic-capture)
+  - [4.2 Operation Sequence Diagram](#42-operation-sequence-diagram)
+    - [4.2.1 ip traffic capture with file output](#421-ip-traffic-capture-with-file-output)
+- [5. Detailed UI Design](#5-detailed-ui-design)
+- [6. User Properties](#6-user-properties)
+  - [6.1 Common](#61-common)
+    - [6.1.1 Offline Mode](#611-offline-mode)
+  - [6.2 ip traffic capture Function](#62-ip-traffic-capture-function)
+  - [6.3 ip traffic capture with file output](#63-ip-traffic-capture-with-file-output)
+- [7. Backend Interface](#7-backend-interface)
+  - [7.1 SOAMIF](#71-soamif)
+  - [7.2 RESTful](#72-restful)
+    - [7.2.1 REST APIs](#721-rest-apis)
+    - [7.2.2 Data Model Mapping (*Unified WEBEM Blocks*)](#722-data-model-mapping-unified-webem-blocks)
+- [8. External dependency](#8-external-dependency)
+  - [8.1 NIDD](#81-nidd)
+  - [8.2 BPF](#82-bpf)
+- [9. API & CLI](#9-api--cli)
+- [10. Additional Info](#10-additional-info)
+- [11. Test Plan](#11-test-plan)
+  - [11.1 test function](#111-test-function)
+    - [11.1.1 Common](#1111-common)
+    - [11.1.2 Baremetal](#1112-baremetal)
+      - [TheCapturePointBCanBeSelected](#thecapturepointbcanbeselected)
+        - [Password](#password)
+        - [DestinationMacAddressIsAppropriateUpdated](#destinationmacaddressisappropriateupdated)
+    - [11.1.3 Cloud](#1113-cloud)
+## 1. Grooming information
+
+<details>
+  <summary>Feature:CB009923</summary>
+
+  ### RequirementId:LTE_OPR_REQ_26177
+  1. REQs:
+     1. LTE_OPR_REQ_26172
+     2. LTE_OPR_REQ_26173
+     3. LTE_OPR_REQ_26174
+     4. LTE_OPR_REQ_26175
+     5. LTE_OPR_REQ_26176
+     6. LTE_OPR_REQ_26177
+     7. LTE_OPR_REQ_26172
+     8. LTE_OPR_REQ_26177
+  2. Area: ip traffic capture view
+  3. Pre-condition:
+     1. WebEM connection to BTS is available
+     2. BTS is Commissioned
+     3. No IP traffic capturing is ongoing
+  4. Description:
+    ```
+        Operator opens from menu Diagnostic – IP Traffic Capturing in Web Element Manager.
+        Operator configures following IP traffic capturing parameters:
+        Capture point (default is Capture Point A):
+        Capture Point A: Capture IP traffic to/from the BTS and SSE
+        Capture Point B: Capture IP traffic to/from the BTS and SSE, at the transport network interfaces
+        Enable/Disable include user plane (default is enabled):
+        Output: File or Streaming (default is File)
+        File option (following parameter is available if file option selected):
+        Password (optional, detailed info, refer to TT_IPT.1948, WBTS_SEC_51985)
+        Streaming option (following parameters are available if streaming option selected):
+        Egress Port: select one of available transport Ethernet ports (mandatory. Available transport Ethernet ports are based on ETHLK object configuration. Port format could be <SMOD module_EIF port number>, e.g. ASIK_EIF1.
+        Operator starts IP traffic capturing.
+    ```
+  5. Post-condition:IP traffic capturing is started and operator is informed.
+  6. Exception:
+     1. During IP traffic capturing ongoing, operator log off and login again, still can see IP traffic capturing is ongoing.
+     2. In case BTS returns error to webEM when IP traffic capturing started, relative message is notified to operator.
+  7. Note:
+     1. B-EIF port cannot be as egress port in both SRAN and 5G.
+     2. Since PR289468 in SRAN, LMP port is supported as default egress port, LMP as egress port does not need to be configured on ETHLK object. Since PR583923 & PR584761 in SRAN, egress streaming to LMP port only support for FSIH, FSMF/FSMFA, ASIA/ASIAA/ASIAB/ASIAL and ASIB/ASIBA/ASIBL (Since CB008342 ASIBL is supported), if LMP is not supported in current BTS then no default value will set for egress port.
+     3. Since CB007135, LMP is not supported in common build when MNL.productVariantPlanned is set to 5gClassicalBTS.)
+     4. Since CB008797, MNL.productVariantPlanned will not be 5gClassicalBTS anymore, the limitation added in CB007135 shall be removed. Destination MAC address (mandatory. MAC address has to be different than the MAC of the BTS Ethernet IFs based on ETHIF_R)
+  8. Product:FA_BTS_WEBEM
+  9. Split:
+     1. Sub-function:the capture point B can be selected
+        1. Test-check-point:
+        2. Author:Kay
+        3. DEFMA:N
+     2. Sub-function:B-EIF port cannot be selected in some configurations, for exmaple SRAN/5G.
+        1. Test-check-point:check if the B-EIF port can be selected in the SRAN configuration.
+        2. Author:Jay
+        3. DEFMA:Y
+     3. Sub-function:output with File
+        1. Test-check-point:check if the capture file can be retrieved from BTS as expected.
+        2. Author:Frank
+        3. DEFMA:N
+
+  ### RequirementId:TBD_0001
+  1. REQs:TBD
+  2. Area:ip traffic capture view
+  3. Pre-condition:
+     1. WebEM connection to BTS is available
+     2. BTS is Commissioned
+     3. No IP traffic capturing is ongoing
+  4. Description:
+    ```
+    Destination MAC address shall be based on the ETHIF_R Since CB008797 (not sure there is legacy REQ and test case to cover this change.)
+    ```
+  5. Post-condition:IP traffic capturing is started and operator is informed.
+  6. Exception:
+  7. Note:
+  8. Product:FA_BTS_WEBEM
+  9.  Split:
+     1. Sub-function:Destination MAC address is appropriate updated.
+        1. Test-check-point:check if the MAC address is required and input for stream output case.
+        2. Author:Richard
+        3. DEFMA:Y
+
+</details>
+
+<details>
+  <summary>Feature:CB010239</summary>
+
+  ### RequirementId:LTE_OPR_REQ_26177
+  1. Area:
+  2. Pre-condition:
+  3. Description:
+  4. Post-condition:
+  5. Exception:
+  6. Note:
+  7. Product:
+  8. Split:
+     1. Sub-function:
+        1. Test-check-point:
+        2. Author:
+        3. DEFMA:
+     2. Sub-function:
+        1. Test-check-point:
+        2. Author:
+        3. DEFMA:
+</details>
+
+## 2. General Information
+
+This is internal design document for "IP Traffic Capturing" under Diagnostic.
+
+|  WEBEM Variant   | Supported |
+|  --------------- | ----------|
+| Baremetal WEBEM  | YES       |
+| vCU       WEBEM  | NO        |
+| vDU       WEBEM  | YES       |
+| ASiR      WEBEM  | NO        |
+
+## 3. Requirements(EFS)
+This chapter provides the EFS path in the DOORS and the REQ, US.
+
+|  ID                | Content                                  |
+|  ---------------   | ---------------------------------------- |
+| LTE_OPR_REQ_26177  | Ip traffic capture            |
+
+NOTE: This chapter provide the links to requirements, ASiR WEBEM has no REQ at this momount, Sphinx EFS ID will be add to this chapter.
+
+
+## 4 UML Diagram
+This chapter is reserved for UML diagrams, we don't limit the diagram category.
+The criterion is readers can easily understand the function's data model, scenario sequence.
+
+if the function is simple enough, UML is optional, it should be decided when feature grooming.
+Suggest using more sub-chapters to structure the chapter for complex cases.
+
+### 4.1 ip traffic capture
+
+
+### 4.2 Operation Sequence Diagram
+#### 4.2.1 ip traffic capture with file output
+
+```plantuml
+@startuml
+@enduml
+```
+
+## 5. Detailed UI Design
+
+## 6. User Properties
+Definition of the GUI properties, this chapter can be split to 'common', 'offline mode', 'Start Rf Diagnostic Test Function', 'Clear Rf Diagnostic Test Results' ，'Show Rf Diagnostic Test Results', 'Save Rf Diagnostic Test Results'.
+
+[TCP1](#thecapturepointbcanbeselected)<TCP1>
+ Requirement traceability V1 - detail function description for the capture point B, this is created from the Split, sub-function node
+</TCP1>
+
+[TCP4](#destinationmacaddressisappropriateupdated)<TCP4>
+ Requirement traceability V2 - for example if we add some rules to test 'Password', the 'Password (optional, detailed info, refer to TT_IPT.1948, WBTS_SEC_51985)' will be parsed and tcp created for it, internal design details skeleton created for it.
+</TCP4>
+
+
+[TCP7](#password)<TCP7>
+ Requirement traceability V2 - for example if we add some rules to test 'Password', the 'Password (optional, detailed info, refer to TT_IPT.1948, WBTS_SEC_51985)' will be parsed and tcp created for it, internal design details skeleton created for it.
+</TCP7>
+
+### 6.1 Common
+#### 6.1.1 Offline Mode
+NA
+### 6.2 ip traffic capture Function
+### 6.3 ip traffic capture with file output
+NA                                                                                                        |
+
+## 7. Backend Interface
+### 7.1 SOAMIF
+NA
+- If there is any PFS case relevant to current WEBEM function, we can also add reference here.
+
+### 7.2 RESTful
+#### 7.2.1 REST APIs
+
+#### 7.2.2 Data Model Mapping (*Unified WEBEM Blocks*)
+
+## 8. External dependency
+### 8.1 NIDD
+If there is any NIDD information that needs to be mentioned, it could be NIDD MO, parameters.
+
+### 8.2 BPF
+If there is any BPF information that needs to be mentioned.
+<br/><br/>
+NA
+<br/><br/>
+
+## 9. API & CLI
+This chapter provides links to CLI, we don't define the CLI duplicated, just link.
+<br/><br/>
+NA
+<br/><br/>
+
+## 10. Additional Info
+This chapter is reserved for additional reference/information/notes.
+
+## 11. Test Plan
+
+### 11.1 test function
+
+> [TCP1](#thecapturepointbcanbeselected) LTE_OPR_REQ_26177 FA_BTS_WEBEM<br>
+> [TCP2](#beifportcannotbeselectedinsomeconfigurations) LTE_OPR_REQ_26177 FA_BTS_WEBEM<br>
+> [TCP3](#outputwithfile) LTE_OPR_REQ_26177 FA_BTS_WEBEM<br>
+> [TCP4](#destinationmacaddressisappropriateupdated) TBD_0001 FA_BTS_WEBEM<br>
+> [TCP7](#password) TBD_0001 FA_BTS_WEBEM<br>
+
+
+#### 11.1.1 Common
+
+#### 11.1.2 Baremetal
+
+##### TheCapturePointBCanBeSelected
+```Detail test case steps TCP1```
+
+###### Password
+```Detail test case steps TCP7```
+
+###### DestinationMacAddressIsAppropriateUpdated
+```Detail test case steps TCP4```
+
+#### 11.1.3 Cloud
