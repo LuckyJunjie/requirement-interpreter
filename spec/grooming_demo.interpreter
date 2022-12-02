@@ -106,7 +106,7 @@
   6. Exception:
   7. Note:
   8. Product:FA_BTS_WEBEM
-  9.  Split:
+  9. Split:
      1. Sub-function:Destination MAC address is appropriate updated.
         1. Test-check-point:check if the MAC address is required and input for stream output case.
         2. Author:Richard

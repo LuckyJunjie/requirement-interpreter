@@ -1,0 +1,55 @@
+<details>
+  <summary>Feature:CB009923</summary>
+
+  ### GroomingChangesId:0001
+
+  1. Block:ip traffic capture view
+  2. Description:
+    ```
+      Operator opens from menu Diagnostic – IP Traffic Capturing in Web Element Manager. Operator configures following IP traffic capturing parameters: Capture point (default is Capture Point A): Capture Point A: Capture IP traffic
+      to/from the BTS and SSE Capture Point B: Capture IP traffic to/from the BTS and SSE, at the transport network interfaces Enable/Disable include user plane (default is enabled): Output: File or Streaming (default is File) File
+      option (following parameter is available if file option selected): Password (optional, detailed info, refer to TT_IPT.1948, WBTS_SEC_51985) Streaming option (following parameters are available if streaming option selected):
+      Egress Port: select one of available transport Ethernet ports (mandatory. Available transport Ethernet ports are based on ETHLK object configuration. Port format could be <SMOD module_EIF port number>, e.g. ASIK_EIF1.
+      Operator starts IP traffic capturing.
+
+      Post-condition:IP traffic capturing is started and operator is informed.
+      Exception:
+
+      During IP traffic capturing ongoing, operator log off and login again, still can see IP traffic capturing is ongoing.
+      In case BTS returns error to webEM when IP traffic capturing started, relative message is notified to operator.
+
+      Note:
+
+      B-EIF port cannot be as egress port in both SRAN and 5G.
+      Since PR289468 in SRAN, LMP port is supported as default egress port, LMP as egress port does not need to be configured on ETHLK object. Since PR583923 & PR584761 in SRAN, egress streaming to LMP port only support for FSIH, FSMF/FSMFA, ASIA/ASIAA/ASIAB/ASIAL and ASIB/ASIBA/ASIBL (Since CB008342 ASIBL is supported), if LMP is not supported in current BTS then no default value will set for egress port.
+      Since CB007135, LMP is not supported in common build when MNL.productVariantPlanned is set to 5gClassicalBTS.)
+      Since CB008797, MNL.productVariantPlanned will not be 5gClassicalBTS anymore, the limitation added in CB007135 shall be removed. Destination MAC address (mandatory. MAC address has to be different than the MAC of the BTS Ethernet IFs based on ETHIF_R)
+    ```
+  3. Product:FA_BTS_WEBEM
+  4. Split:(This is just demo to show format)
+     1. Impact:
+        1. Title: Capture point B
+        2. Description: The capture point B can be selected
+        3. Test-check-point:Check if the capture point can be send with operation and get expected capture result.
+        4. Author:Richard
+     2. Impact:
+        1. Title: Port for products
+        2. Description: B-EIF port cannot be selected in some configurations, for exmaple SRAN/5G
+        3. Test-check-point:Check if the B-EIF port can not be selected in SRAN and 5G.
+        4. Author:Jay
+        5. DEFMA:Y
+     3. Impact:
+        1. Title: Output as file
+        2. Description: Check if the capture file can be retrieved from BTS as expected.
+        3. Test-check-point: Check if the file can be retrieved from BTS if the output type selected as file.
+        4. Author:Frank
+        5. DEFMA:Y
+     4. Impact:
+        1. Title: NIDD checking
+        2. Description: The NIDD shall be updated and new parameters shall be included as pre-condition.
+        3. Test-check-point: Check if the NIDD included parameters as expected.
+        4. Author:Kay
+        5. DEFMA:Y
+        6. CanAutomatic:N
+
+</details>

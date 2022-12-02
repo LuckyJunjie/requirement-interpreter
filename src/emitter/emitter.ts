@@ -191,7 +191,6 @@ export class Emitter {
             case SyntaxKind.Constraints: this.emitConstraints(<Constraints>node); break;
             case SyntaxKind.SymbolSpan: this.emitSymbolSpan(<SymbolSpan>node); break;
             case SyntaxKind.ThroughKeyword: this.emitKeyword(node); break;
-            case SyntaxKind.TestCheckPointKeyword: this.emitCheckPointKeyword(node); break;
             case SyntaxKind.ButNotSymbol: this.emitButNotSymbol(<ButNotSymbol>node); break;
             case SyntaxKind.OneOfSymbol: this.emitOneOfSymbol(<OneOfSymbol>node); break;
             case SyntaxKind.Nonterminal: this.emitNonterminal(<Nonterminal>node); break;

@@ -189,6 +189,14 @@ export class Parser {
         this.scanner = new Scanner(filename, text, this.diagnostics, this.cancelToken);
 
         this.nextToken();
+
+        // TODO: print all token without any logic and no node created.Just to check the source file overview.
+        while (!this.isEOF()) {
+            this.nextToken();
+            console.log(`### token text:  ${this.readTokenText(this.token)}`);
+            console.log(`### token value:  ${this.readTokenValue(this.token)}`);
+        }
+
         this.parseSourceElementList(elements);
 
         getSourceFileAccessor().setImports(sourceFile, this.imports);
@@ -243,6 +251,8 @@ export class Parser {
     private skipUntil(isRecoveryToken: (scanner: Scanner) => boolean): void {
         while (!isRecoveryToken(this.scanner) && !this.isEOF()) {
             this.nextToken();
+            // console.log(`### token text:  ${this.readTokenText(this.token)}`);
+            // console.log(`### token value:  ${this.readTokenValue(this.token)}`);
         }
     }
 
@@ -710,10 +720,6 @@ export class Parser {
                 if (!fragments) fragments = [];
                 fragments.push(this.parseNonterminal(/*allowArgumentList*/ false, /*allowOptional*/ false));
             }
-            else if (this.token === SyntaxKind.TestCheckPointKeyword) {
-                if (!fragments) fragments = [];
-                fragments.push(this.parseNonterminal(/*allowArgumentList*/ false, /*allowOptional*/ false));
-            }
             else {
                 break;
             }
@@ -1012,9 +1018,11 @@ export class Parser {
     private parseProduction(): Production {
         const fullStart = this.scanner.getStartPos();
         const name = this.parseIdentifier();
+        // console.log(`#### name : ${JSON.stringify(name)}`);
         const parameters = this.tryParseParameterList();
         const colonToken = this.parseAnyToken(isProductionSeparatorToken);
         const body = this.parseBody();
+        // console.log(`#### name : ${JSON.stringify(body)}`);
         const node = new Production(name, parameters, colonToken, body);
         return this.finishNode(node, fullStart);
     }
@@ -1111,6 +1119,10 @@ export class Parser {
         let node: SourceElement | undefined;
         if (this.token === SyntaxKind.Identifier) {
             node = this.parseProduction();
+            // TODO: print the node details
+            console.log(`### token text:  ${this.readTokenText(this.token)}`);
+            console.log(`### token value:  ${this.readTokenValue(this.token)}`);
+            console.log(`&&&  ${JSON.stringify(node)}`);
         }
         else {
             const atToken = this.parseToken(SyntaxKind.AtToken);

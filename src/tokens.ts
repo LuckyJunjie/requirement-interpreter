@@ -207,9 +207,6 @@ export enum SyntaxKind {
     ThroughKeyword,
     TrueKeyword, // LastKeyword, LastToken
 
-    // Requirements trace Keywords
-    TestCheckPointKeyword,
-
     // TextContent, Literals
     StringLiteral, // FirstLiteral, FirstTextContent
     NumberLiteral,
@@ -596,7 +593,6 @@ const textToToken = new Map<string, SyntaxKind>([
     ["or", SyntaxKind.OrKeyword],
     ["through", SyntaxKind.ThroughKeyword],
     ["true", SyntaxKind.TrueKeyword],
-    ["TestCheckPoint", SyntaxKind.TestCheckPointKeyword],
 ]);
 
 const tokenToText = new Map<SyntaxKind, string>([...textToToken]
