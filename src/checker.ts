@@ -47,7 +47,7 @@ import {
     LinkReference,
     RightHandSide,
     RightHandSideList,
-    Production,
+    Feature,
     SourceElement,
     Define,
     PlaceholderSymbol,
@@ -70,17 +70,17 @@ class SymbolLinks {
 }
 
 interface Defines {
-    readonly noStrictParametricProductions: boolean;
+    readonly noStrictParametricFeatures: boolean;
     readonly noUnusedParameters: boolean;
 }
 
 interface DefineOverrides {
-    noStrictParametricProductions?: boolean | "default";
+    noStrictParametricFeatures?: boolean | "default";
     noUnusedParameters?: boolean | "default";
 }
 
 function equateDefines(a: DefineOverrides, b: DefineOverrides) {
-    return a.noStrictParametricProductions === b.noStrictParametricProductions
+    return a.noStrictParametricFeatures === b.noStrictParametricFeatures
         && a.noUnusedParameters === b.noUnusedParameters;
 }
 
@@ -92,7 +92,7 @@ export class Checker {
     private _diagnostics!: DiagnosticMessages;
     private _sourceFile!: SourceFile;
     private _noChecks!: boolean;
-    private _productionParametersByName!: Map<Production, Set<string>>;
+    private _productionParametersByName!: Map<Feature, Set<string>>;
     private _cancelToken?: CancelToken;
     private _nodeLinks?: Map<Node, NodeLinks>;
     private _symbolLinks?: Map<Symbol, SymbolLinks>;
@@ -104,7 +104,7 @@ export class Checker {
         this._options = options;
         this._lineOffsetMap = lineOffsetMap;
         this._defines = {
-            noStrictParametricProductions: this._options?.noStrictParametricProductions ?? false,
+            noStrictParametricFeatures: this._options?.noStrictParametricFeatures ?? false,
             noUnusedParameters: this._options?.noUnusedParameters ?? false
         };
     }
@@ -116,7 +116,7 @@ export class Checker {
             const savedNoChecks = this._noChecks;
             const savedCancellationToken = this._cancelToken;
             const savedSourceFile = this._sourceFile;
-            const savedProductionParametersByName = this._productionParametersByName;
+            const savedFeatureParametersByName = this._productionParametersByName;
             const savedBindings = this._bindings;
             const savedDiagnostics = this._diagnostics;
             try {
@@ -147,7 +147,7 @@ export class Checker {
                 this._noChecks = savedNoChecks;
                 this._cancelToken = savedCancellationToken;
                 this._sourceFile = savedSourceFile;
-                this._productionParametersByName = savedProductionParametersByName;
+                this._productionParametersByName = savedFeatureParametersByName;
                 this._bindings = savedBindings;
                 this._diagnostics = savedDiagnostics;
             }
@@ -186,9 +186,9 @@ export class Checker {
             const nodeKeyText = nodeKey.text;
             this._defineOverrideMap ??= new RegionMap(equateDefines);
             switch (nodeKeyText) {
-                case "noStrictParametricProductions":
+                case "noStrictParametricFeatures":
                     this._defineOverrideMap.addRegion(this._sourceFile, position.line, {
-                        noStrictParametricProductions:
+                        noStrictParametricFeatures:
                             node.valueToken!.kind === SyntaxKind.DefaultKeyword ? "default" :
                             node.valueToken!.kind === SyntaxKind.TrueKeyword
                     });
@@ -244,20 +244,20 @@ export class Checker {
 
     private checkSourceElement(node: SourceElement): void {
         switch (node.kind) {
-            case SyntaxKind.Production:
-                this.checkProduction(<Production>node);
+            case SyntaxKind.Feature:
+                this.checkFeature(<Feature>node);
                 break;
         }
     }
 
-    private checkProduction(node: Production): void {
-        this.checkGrammarProduction(node);
+    private checkFeature(node: Feature): void {
+        this.checkGrammarFeature(node);
 
-        if (this.getDefine(node, "noStrictParametricProductions")) {
-            this.checkProductionNonStrict(node);
+        if (this.getDefine(node, "noStrictParametricFeatures")) {
+            this.checkFeatureNonStrict(node);
         }
         else {
-            this.checkProductionStrict(node);
+            this.checkFeatureStrict(node);
         }
 
         if (node.body) {
@@ -282,8 +282,8 @@ export class Checker {
             const symbol = this._bindings.getSymbol(node);
             if (symbol) {
                 for (const decl of this._bindings.getDeclarations(symbol)) {
-                    if (decl.kind === SyntaxKind.Production) {
-                        this.resolveProduction(decl);
+                    if (decl.kind === SyntaxKind.Feature) {
+                        this.resolveFeature(decl);
                     }
                 }
             }
@@ -298,7 +298,7 @@ export class Checker {
         }
     }
 
-    private resolveProduction(node: Production) {
+    private resolveFeature(node: Feature) {
         if (!this.getNodeLinks(node)?.hasResolvedSymbols) {
             this.getNodeLinks(node, /*create*/ true).hasResolvedSymbols = true;
         }
@@ -311,7 +311,7 @@ export class Checker {
         node.forEachChild(visitNode);
     }
 
-    private checkProductionNonStrict(node: Production) {
+    private checkFeatureNonStrict(node: Feature) {
         this.checkIdentifier(node.name);
 
         if (node.parameterList) {
@@ -319,7 +319,7 @@ export class Checker {
         }
     }
 
-    private getProductionParametersByName(node: Production) {
+    private getFeatureParametersByName(node: Feature) {
         let parametersByName = this._productionParametersByName.get(node);
         if (parametersByName) return parametersByName;
         this._productionParametersByName.set(node, parametersByName = new Set());
@@ -336,51 +336,51 @@ export class Checker {
         return parametersByName;
     }
 
-    private checkProductionStrict(thisProduction: Production) {
-        const thisProductionName = thisProduction.name;
-        const thisProductionNameText = thisProductionName.text;
-        const thisProductionSymbol = this.checkIdentifier(thisProductionName);
-        const thisProductionParameterList = thisProduction.parameterList;
-        const thisProductionParameters = thisProductionParameterList?.elements;
-        const thisProductionParameterCount = thisProductionParameters?.length ?? 0;
-        const firstProduction = <Production>this._bindings.getDeclarations(thisProductionSymbol)[0];
-        if (thisProductionParameterList && thisProductionParameters) {
-            this.checkParameterList(thisProductionParameterList);
+    private checkFeatureStrict(thisFeature: Feature) {
+        const thisFeatureName = thisFeature.name;
+        const thisFeatureNameText = thisFeatureName.text;
+        const thisFeatureSymbol = this.checkIdentifier(thisFeatureName);
+        const thisFeatureParameterList = thisFeature.parameterList;
+        const thisFeatureParameters = thisFeatureParameterList?.elements;
+        const thisFeatureParameterCount = thisFeatureParameters?.length ?? 0;
+        const firstFeature = <Feature>this._bindings.getDeclarations(thisFeatureSymbol)[0];
+        if (thisFeatureParameterList && thisFeatureParameters) {
+            this.checkParameterList(thisFeatureParameterList);
         }
 
-        if (firstProduction === thisProduction) {
+        if (firstFeature === thisFeature) {
             return;
         }
 
-        const thisProductionParameterNames = this.getProductionParametersByName(thisProduction);
-        const firstProductionParameterList = firstProduction.parameterList;
-        const firstProductionParameters = firstProductionParameterList?.elements;
-        const firstProductionParameterCount = firstProductionParameters?.length ?? 0;
-        const firstProductionParameterNames = this.getProductionParametersByName(firstProduction);
-        if (firstProductionParameters) {
-            for (let i = 0; i < firstProductionParameterCount; i++) {
-                const firstProductionParameter = firstProductionParameters[i];
-                const firstProductionParameterName = firstProductionParameter.name;
-                const firstProductionParameterNameText = firstProductionParameterName.text;
-                if (firstProductionParameterNameText && !thisProductionParameterNames.has(firstProductionParameterNameText)) {
-                    this.reportError(thisProductionName, Diagnostics.Production_0_is_missing_parameter_1_All_definitions_of_production_0_must_specify_the_same_formal_parameters, thisProductionNameText, firstProductionParameterNameText);
+        const thisFeatureParameterNames = this.getFeatureParametersByName(thisFeature);
+        const firstFeatureParameterList = firstFeature.parameterList;
+        const firstFeatureParameters = firstFeatureParameterList?.elements;
+        const firstFeatureParameterCount = firstFeatureParameters?.length ?? 0;
+        const firstFeatureParameterNames = this.getFeatureParametersByName(firstFeature);
+        if (firstFeatureParameters) {
+            for (let i = 0; i < firstFeatureParameterCount; i++) {
+                const firstFeatureParameter = firstFeatureParameters[i];
+                const firstFeatureParameterName = firstFeatureParameter.name;
+                const firstFeatureParameterNameText = firstFeatureParameterName.text;
+                if (firstFeatureParameterNameText && !thisFeatureParameterNames.has(firstFeatureParameterNameText)) {
+                    this.reportError(thisFeatureName, Diagnostics.Feature_0_is_missing_parameter_1_All_definitions_of_Feature_0_must_specify_the_same_formal_parameters, thisFeatureNameText, firstFeatureParameterNameText);
                 }
             }
         }
 
-        if (thisProductionParameters) {
-            for (let i = 0; i < thisProductionParameterCount; i++) {
-                const thisProductionParameter = thisProductionParameters[i];
-                const thisProductionParameterName = thisProductionParameter.name;
-                const thisProductionParameterNameText = thisProductionParameterName.text;
-                if (thisProductionParameterNameText && !firstProductionParameterNames.has(thisProductionParameterNameText)) {
-                    this.reportError(firstProduction, Diagnostics.Production_0_is_missing_parameter_1_All_definitions_of_production_0_must_specify_the_same_formal_parameters, thisProductionNameText, thisProductionParameterNameText);
+        if (thisFeatureParameters) {
+            for (let i = 0; i < thisFeatureParameterCount; i++) {
+                const thisFeatureParameter = thisFeatureParameters[i];
+                const thisFeatureParameterName = thisFeatureParameter.name;
+                const thisFeatureParameterNameText = thisFeatureParameterName.text;
+                if (thisFeatureParameterNameText && !firstFeatureParameterNames.has(thisFeatureParameterNameText)) {
+                    this.reportError(firstFeature, Diagnostics.Feature_0_is_missing_parameter_1_All_definitions_of_Feature_0_must_specify_the_same_formal_parameters, thisFeatureNameText, thisFeatureParameterNameText);
                 }
             }
         }
     }
 
-    private checkGrammarProduction(node: Production): boolean {
+    private checkGrammarFeature(node: Feature): boolean {
         if (!node.colonToken) {
             return this.reportGrammarError(node, node.parameterList?.end ?? node.name.end, Diagnostics._0_expected, tokenToString(SyntaxKind.ColonToken));
         }
@@ -1135,7 +1135,7 @@ export class Checker {
     private checkNonterminal(node: Nonterminal, allowOptional: boolean = false, allowArguments: boolean = true): void {
         this.checkGrammarNonTerminal(node, allowOptional, allowArguments);
 
-        if (this.getDefine(node, "noStrictParametricProductions") || !allowArguments) {
+        if (this.getDefine(node, "noStrictParametricFeatures") || !allowArguments) {
             this.checkNonterminalNonStrict(node);
         }
         else {
@@ -1155,7 +1155,7 @@ export class Checker {
         const nonterminalName = node.name;
         const productionSymbol = this.checkIdentifier(nonterminalName);
         if (productionSymbol) {
-            const production = <Production>this._bindings.getDeclarations(productionSymbol)[0];
+            const production = <Feature>this._bindings.getDeclarations(productionSymbol)[0];
             const parameterListElements = production.parameterList?.elements;
             const argumentListElements = node.argumentList?.elements;
             const nameSet = new Set<string>();
@@ -1174,7 +1174,7 @@ export class Checker {
                                 nameSet.add(argumentNameText);
                                 const parameterSymbol = this.resolveSymbol(production, argumentNameText, SymbolKind.Parameter);
                                 if (!parameterSymbol) {
-                                    this.reportError(argumentName, Diagnostics.Production_0_does_not_have_a_parameter_named_1_, productionSymbol.name, argumentNameText);
+                                    this.reportError(argumentName, Diagnostics.Feature_0_does_not_have_a_parameter_named_1_, productionSymbol.name, argumentNameText);
                                 }
                             }
                         }
@@ -1290,7 +1290,7 @@ export class Checker {
                         this._bindings._setSymbol(node, symbol);
                         return symbol;
 
-                    case SyntaxKind.Production:
+                    case SyntaxKind.Feature:
                         symbol = this._bindings.getSymbol(parent);
                         this._bindings._setSymbol(node, symbol);
                         return symbol;
@@ -1298,7 +1298,7 @@ export class Checker {
                     case SyntaxKind.LookaheadAssertion:
                     case SyntaxKind.Nonterminal:
                         if (!symbol) {
-                            symbol = this.resolveSymbol(node, node.text, SymbolKind.Production, reportErrors ? Diagnostics.Cannot_find_name_0_ : undefined);
+                            symbol = this.resolveSymbol(node, node.text, SymbolKind.Feature, reportErrors ? Diagnostics.Cannot_find_name_0_ : undefined);
                             this.markSymbolAsReferenced(symbol);
                         }
                         break;
@@ -1308,8 +1308,8 @@ export class Checker {
                         if (argument.operatorToken?.kind === SyntaxKind.QuestionToken) {
                             symbol ??= this.resolveSymbol(node, node.text, SymbolKind.Parameter);
                             if (!symbol && reportErrors) {
-                                const production = <Production>this._bindings.getAncestor(argument, SyntaxKind.Production);
-                                this.reportError(node, Diagnostics.Production_0_does_not_have_a_parameter_named_1_, production.name.text, node.text);
+                                const production = <Feature>this._bindings.getAncestor(argument, SyntaxKind.Feature);
+                                this.reportError(node, Diagnostics.Feature_0_does_not_have_a_parameter_named_1_, production.name.text, node.text);
                             }
                             this.markSymbolAsReferenced(symbol);
                         }
@@ -1317,25 +1317,25 @@ export class Checker {
                             // get the symbol of the parameter of the target production
                             const nonterminal = <Nonterminal | undefined>this._bindings.getAncestor(parent, SyntaxKind.Nonterminal);
                             if (nonterminal?.name?.text) {
-                                const productionSymbol = this.resolveSymbol(node, nonterminal.name.text, SymbolKind.Production);
+                                const productionSymbol = this.resolveSymbol(node, nonterminal.name.text, SymbolKind.Feature);
                                 if (productionSymbol) {
-                                    const production = <Production>this._bindings.getDeclarations(productionSymbol)[0];
+                                    const production = <Feature>this._bindings.getDeclarations(productionSymbol)[0];
                                     symbol ??= this.resolveSymbol(production, node.text, SymbolKind.Parameter);
                                     if (!symbol && reportErrors) {
-                                        this.reportError(node, Diagnostics.Production_0_does_not_have_a_parameter_named_1_, production.name.text, node.text);
+                                        this.reportError(node, Diagnostics.Feature_0_does_not_have_a_parameter_named_1_, production.name.text, node.text);
                                     }
                                 }
                             }
                             else {
                                 const constraints = <Constraints | undefined>this._bindings.getAncestor(parent, SyntaxKind.Constraints);
                                 if (constraints) {
-                                    const production = <Production>this._bindings.getAncestor(constraints, SyntaxKind.Production);
+                                    const production = <Feature>this._bindings.getAncestor(constraints, SyntaxKind.Feature);
                                     if (!symbol) {
                                         symbol = this.resolveSymbol(production, node.text, SymbolKind.Parameter);
                                         this.markSymbolAsReferenced(symbol);
                                     }
                                     if (!symbol && reportErrors) {
-                                        this.reportError(node, Diagnostics.Production_0_does_not_have_a_parameter_named_1_, production.name.text, node.text);
+                                        this.reportError(node, Diagnostics.Feature_0_does_not_have_a_parameter_named_1_, production.name.text, node.text);
                                     }
                                 }
                             }
@@ -1543,7 +1543,7 @@ export class Resolver {
     /**
      * Gets the declarations for `name` at the provided `location` that have the given `meaning`.
      */
-    public getDeclarations(name: string, meaning: SymbolKind.Production, location: Node): Production[];
+    public getDeclarations(name: string, meaning: SymbolKind.Feature, location: Node): Feature[];
     /**
      * Gets the declarations for `name` at the provided `location` that have the given `meaning`.
      */
@@ -1594,7 +1594,7 @@ export class Resolver {
             if (parent) {
                 symbol = parent.kind === SyntaxKind.Parameter
                     ? this.bindings.resolveSymbol(node, node.text, SymbolKind.Parameter)
-                    : this.bindings.resolveSymbol(node, node.text, SymbolKind.Production);
+                    : this.bindings.resolveSymbol(node, node.text, SymbolKind.Feature);
             }
         }
         if (symbol) {
@@ -1605,10 +1605,10 @@ export class Resolver {
     }
 
     /**
-     * Get the link id for the `Production` to which the provided `node` resolves.
+     * Get the link id for the `Feature` to which the provided `node` resolves.
      */
-    public getProductionLinkId(node: Identifier): string | undefined {
-        const symbol = this.bindings.resolveSymbol(node, node.text, SymbolKind.Production);
+    public getFeatureLinkId(node: Identifier): string | undefined {
+        const symbol = this.bindings.resolveSymbol(node, node.text, SymbolKind.Feature);
         return symbol?.name;
     }
 
@@ -1627,8 +1627,8 @@ export class Resolver {
         }
 
         if (includePrefix) {
-            const production = <Production>this.bindings.getAncestor(node, SyntaxKind.Production);
-            const productionId = this.getProductionLinkId(production.name);
+            const production = <Feature>this.bindings.getAncestor(node, SyntaxKind.Feature);
+            const productionId = this.getFeatureLinkId(production.name);
             return productionId + "-" + linkId;
         }
 
@@ -1934,5 +1934,5 @@ function getSymbolMeaning(node: Node | undefined) {
         }
     }
 
-    return SymbolKind.Production;
+    return SymbolKind.Feature;
 }

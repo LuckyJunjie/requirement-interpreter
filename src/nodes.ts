@@ -22,8 +22,8 @@ import {
     MetaElementKind,
     OptionalSymbolKind,
     PrimarySymbolKind,
-    ProductionBodyKind,
-    ProductionSeperatorKind,
+    FeatureBodyKind,
+    FeatureSeperatorKind,
     ProseFragmentLiteralKind,
     SourceElementKind,
     SyntaxKind,
@@ -224,7 +224,7 @@ export type HtmlTrivia =
 /**
  * Represents an HTML comment trivia token:
  * ```requirement-interpreter
- * Production ::
+ * Feature ::
  *   <!--before-->Nonterminal
  * ```
  * {@docCategory Nodes}
@@ -248,7 +248,7 @@ export abstract class HtmlTagTriviaBase<TKind extends HtmlTagTriviaKind> extends
 /**
  * Represents an HTML open-tag trivia token:
  * ```requirement-interpreter
- * Production ::
+ * Feature ::
  *   <ins>Inserted</ins>
  *   <del>Deleted</del>
  * ```
@@ -263,7 +263,7 @@ export class HtmlOpenTagTrivia extends HtmlTagTriviaBase<SyntaxKind.HtmlOpenTagT
 /**
  * Represents an HTML close-tag trivia token:
  * ```requirement-interpreter
- * Production ::
+ * Feature ::
  *   <ins>Inserted</ins>
  *   <del>Deleted</del>
  * ```
@@ -305,7 +305,7 @@ export class StringLiteral extends Node<SyntaxKind.StringLiteral> implements Tex
  * Represents a number literal (used by `@line`)
  * ```requirement-interpreter
  * @line 500
- * Production :: Nonterminal
+ * Feature :: Nonterminal
  * ```
  * {@docCategory Nodes}
  */
@@ -358,7 +358,7 @@ export class TerminalLiteral extends Node<SyntaxKind.TerminalLiteral> implements
 }
 
 /**
- * Represents an identifier such as a Production or Parameter.
+ * Represents an identifier such as a Feature or Parameter.
  * {@docCategory Nodes}
  */
 export class Identifier extends Node<SyntaxKind.Identifier> implements TextContent {
@@ -445,9 +445,9 @@ export class SymbolSet extends Node<SyntaxKind.SymbolSet> {
 }
 
 /**
- * Represents a set of constraints for a right-hand-side of a Production.
+ * Represents a set of constraints for a right-hand-side of a Feature.
  * ```requirement-interpreter
- * Production[A] ::
+ * Feature[A] ::
  *   [+A] A
  *   [~A] B
  * ```
@@ -893,7 +893,7 @@ export class Terminal extends OptionalSymbolBase<SyntaxKind.Terminal> {
 }
 
 /**
- * Represents a non-terminal reference to another Production.
+ * Represents a non-terminal reference to another Feature.
  * ```requirement-interpreter
  * IdentifierReference[~Yield, ~Await]
  * ```
@@ -1549,11 +1549,11 @@ export class LinkReference extends Node<SyntaxKind.LinkReference> {
 }
 
 /** {@docCategory Nodes} */
-export abstract class ProductionBodyBase<TKind extends ProductionBodyKind> extends Node<TKind> {
+export abstract class FeatureBodyBase<TKind extends FeatureBodyKind> extends Node<TKind> {
 }
 
 /** {@docCategory Nodes} */
-export class RightHandSide extends ProductionBodyBase<SyntaxKind.RightHandSide> {
+export class RightHandSide extends FeatureBodyBase<SyntaxKind.RightHandSide> {
     public readonly constraints: Constraints | undefined;
     public readonly head: SymbolSpan | undefined;
     public readonly reference: LinkReference | undefined;
@@ -1610,7 +1610,7 @@ export class RightHandSide extends ProductionBodyBase<SyntaxKind.RightHandSide> 
 }
 
 /** {@docCategory Nodes} */
-export class RightHandSideList extends ProductionBodyBase<SyntaxKind.RightHandSideList> {
+export class RightHandSideList extends FeatureBodyBase<SyntaxKind.RightHandSideList> {
     public readonly elements: ReadonlyArray<RightHandSide> | undefined;
 
     public constructor(elements: ReadonlyArray<RightHandSide> | undefined) {
@@ -1655,7 +1655,7 @@ export class RightHandSideList extends ProductionBodyBase<SyntaxKind.RightHandSi
 }
 
 /** {@docCategory Nodes} */
-export class OneOfList extends ProductionBodyBase<SyntaxKind.OneOfList> {
+export class OneOfList extends FeatureBodyBase<SyntaxKind.OneOfList> {
     public readonly oneKeyword: Token<SyntaxKind.OneKeyword>;
     public readonly ofKeyword: Token<SyntaxKind.OfKeyword> | undefined;
     public readonly indented: boolean;
@@ -1714,7 +1714,7 @@ export class OneOfList extends ProductionBodyBase<SyntaxKind.OneOfList> {
 }
 
 /** {@docCategory Nodes} */
-export type ProductionBody =
+export type FeatureBody =
     | OneOfList
     | RightHandSide
     | RightHandSideList
@@ -1814,14 +1814,14 @@ export abstract class SourceElementBase<TKind extends SourceElementKind> extends
 }
 
 /** {@docCategory Nodes} */
-export class Production extends SourceElementBase<SyntaxKind.Production> {
+export class Feature extends SourceElementBase<SyntaxKind.Feature> {
     public readonly name: Identifier;
     public readonly parameterList: ParameterList | undefined;
-    public readonly colonToken: Token<ProductionSeperatorKind> | undefined;
-    public readonly body: ProductionBody | undefined;
+    public readonly colonToken: Token<FeatureSeperatorKind> | undefined;
+    public readonly body: FeatureBody | undefined;
 
-    public constructor(name: Identifier, parameterList: ParameterList | undefined, colonToken: Token<ProductionSeperatorKind> | undefined, body: ProductionBody | undefined) {
-        super(SyntaxKind.Production);
+    public constructor(name: Identifier, parameterList: ParameterList | undefined, colonToken: Token<FeatureSeperatorKind> | undefined, body: FeatureBody | undefined) {
+        super(SyntaxKind.Feature);
         this.name = name;
         this.parameterList = parameterList;
         this.colonToken = colonToken;
@@ -1845,9 +1845,9 @@ export class Production extends SourceElementBase<SyntaxKind.Production> {
         if (this.body) yield this.body;
     }
 
-    public update(name: Identifier, parameterList: ParameterList | undefined, body: ProductionBody | undefined) {
+    public update(name: Identifier, parameterList: ParameterList | undefined, body: FeatureBody | undefined) {
         return name !== this.name || parameterList !== this.parameterList || body !== this.body
-            ? setTextRange(new Production(name, parameterList, this.colonToken, body), this.pos, this.end)
+            ? setTextRange(new Feature(name, parameterList, this.colonToken, body), this.pos, this.end)
             : this;
     }
 
@@ -1873,7 +1873,7 @@ export class Production extends SourceElementBase<SyntaxKind.Production> {
         return undefined;
     }
 
-    protected override accept(visitor: NodeVisitor) { return visitor.visitProduction(this); }
+    protected override accept(visitor: NodeVisitor) { return visitor.visitFeature(this); }
 }
 
 /** {@docCategory Nodes} */
@@ -2053,7 +2053,7 @@ export type MetaElement =
 
 /** {@docCategory Nodes} */
 export type SourceElement =
-    | Production
+    | Feature
     | MetaElement
     ;
 
@@ -2111,7 +2111,7 @@ export class SourceFile extends Node<SyntaxKind.SourceFile> {
 /** {@docCategory Nodes} */
 export type Declaration =
     | SourceFile
-    | Production
+    | Feature
     | Parameter
     ;
 

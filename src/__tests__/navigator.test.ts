@@ -6,7 +6,7 @@
  */
 
 import "./matchers";
-import { Production, RightHandSideList, RightHandSide, Nonterminal } from "../nodes";
+import { Feature, RightHandSideList, RightHandSide, Nonterminal } from "../nodes";
 import { Parser } from "../parser";
 import { NodeNavigator } from "../navigator";
 import { SyntaxKind } from "../tokens";
@@ -63,7 +63,7 @@ ExportSpecifier :
         expect(navigator.getRoot()).toStrictEqual(sourceFile);
         expect(navigator.getNode()).toStrictEqual(sourceFile.elements[0]);
         expect(navigator.getParent()).toStrictEqual(sourceFile);
-        expect(navigator.getKind()).toStrictEqual(SyntaxKind.Production);
+        expect(navigator.getKind()).toStrictEqual(SyntaxKind.Feature);
         expect(navigator.getDepth()).toStrictEqual(1);
         expect(navigator.getName()).toStrictEqual("elements");
         expect(navigator.getOffset()).toStrictEqual(0);
@@ -79,7 +79,7 @@ ExportSpecifier :
         expect(navigator.getRoot()).toStrictEqual(sourceFile);
         expect(navigator.getNode()).toStrictEqual(sourceFile.elements[sourceFile.elements.length - 1]);
         expect(navigator.getParent()).toStrictEqual(sourceFile);
-        expect(navigator.getKind()).toStrictEqual(SyntaxKind.Production);
+        expect(navigator.getKind()).toStrictEqual(SyntaxKind.Feature);
         expect(navigator.getDepth()).toStrictEqual(1);
         expect(navigator.getName()).toStrictEqual("elements");
         expect(navigator.getOffset()).toStrictEqual(sourceFile.elements.length - 1);
@@ -96,7 +96,7 @@ ExportSpecifier :
         expect(navigator.getRoot()).toStrictEqual(sourceFile);
         expect(navigator.getNode()).toStrictEqual(sourceFile.elements[1]);
         expect(navigator.getParent()).toStrictEqual(sourceFile);
-        expect(navigator.getKind()).toStrictEqual(SyntaxKind.Production);
+        expect(navigator.getKind()).toStrictEqual(SyntaxKind.Feature);
         expect(navigator.getDepth()).toStrictEqual(1);
         expect(navigator.getName()).toStrictEqual("elements");
         expect(navigator.getOffset()).toStrictEqual(1);
@@ -109,7 +109,7 @@ ExportSpecifier :
         const { navigator } = getNavigator();
         navigator.moveToFirstChild();
         const movedToFirstChild = navigator.moveToFirstChild();
-        const production = <Production>navigator.getParent();
+        const production = <Feature>navigator.getParent();
         const firstChild = navigator.getNode();
         const firstChildName = navigator.getName();
         const movedToSibling = navigator.moveToNextSibling();
@@ -117,7 +117,7 @@ ExportSpecifier :
         const nextSiblingName = navigator.getName();
         expect(movedToFirstChild).toBe(true);
         expect(movedToSibling).toBe(true);
-        expect(production.kind).toBe(SyntaxKind.Production);
+        expect(production.kind).toBe(SyntaxKind.Feature);
         expect(firstChildName).toBe("name");
         expect(firstChild).toBe(production.name);
         expect(nextSiblingName).toBe("colonToken");
@@ -132,7 +132,7 @@ ExportSpecifier :
         expect(navigator.getRoot()).toStrictEqual(sourceFile);
         expect(navigator.getNode()).toStrictEqual(sourceFile.elements[sourceFile.elements.length - 2]);
         expect(navigator.getParent()).toStrictEqual(sourceFile);
-        expect(navigator.getKind()).toStrictEqual(SyntaxKind.Production);
+        expect(navigator.getKind()).toStrictEqual(SyntaxKind.Feature);
         expect(navigator.getDepth()).toStrictEqual(1);
         expect(navigator.getName()).toStrictEqual("elements");
         expect(navigator.getOffset()).toStrictEqual(sourceFile.elements.length - 2);
@@ -145,7 +145,7 @@ ExportSpecifier :
         const { navigator } = getNavigator();
         navigator.moveToFirstChild();
         const movedToLastChild = navigator.moveToLastChild();
-        const production = <Production>navigator.getParent();
+        const production = <Feature>navigator.getParent();
         const lastChild = navigator.getNode();
         const lastChildName = navigator.getName();
         const movedToSibling = navigator.moveToPreviousSibling();
@@ -153,7 +153,7 @@ ExportSpecifier :
         const previousSiblingName = navigator.getName();
         expect(movedToLastChild).toBe(true);
         expect(movedToSibling).toBe(true);
-        expect(production.kind).toBe(SyntaxKind.Production);
+        expect(production.kind).toBe(SyntaxKind.Feature);
         expect(lastChildName).toBe("body");
         expect(lastChild).toBe(production.body);
         expect(previousSiblingName).toBe("colonToken");
@@ -166,7 +166,7 @@ ExportSpecifier :
         expect(moved).toEqual(true);
         expect(navigator.getKind()).toStrictEqual(SyntaxKind.Identifier);
         expect(navigator.getName()).toStrictEqual("name");
-        const production = <Production>sourceFile.elements[2];
+        const production = <Feature>sourceFile.elements[2];
         const list = <RightHandSideList>production.body;
         const rhs = <RightHandSide>(list.elements && list.elements[0]);
         const symbol = <Nonterminal>rhs.head!.symbol;
@@ -213,7 +213,7 @@ ExportSpecifier :
         it("when token in AST", () => {
             const { sourceFile, navigator, firstToken } = getNavigator();
             firstToken();
-            expect(navigator.getNode()).toStrictEqual((sourceFile.elements[0] as Production).name);
+            expect(navigator.getNode()).toStrictEqual((sourceFile.elements[0] as Feature).name);
         });
         it("when token not in AST", () => {
             const { navigator, firstToken } = getNavigator(",");
@@ -222,7 +222,7 @@ ExportSpecifier :
         });
         it("moves to first token in node", () => {
             const { navigator, firstToken } = getNavigator("A : B? C?");
-            expect(navigator.moveToFirstChild(SyntaxKind.Production)).toBe(true);
+            expect(navigator.moveToFirstChild(SyntaxKind.Feature)).toBe(true);
             expect(navigator.moveToLastChild(SyntaxKind.RightHandSide)).toBe(true);
             expect(navigator.moveToFirstChild(SyntaxKind.SymbolSpan)).toBe(true);
             expect(navigator.moveToFirstChild(SyntaxKind.Nonterminal)).toBe(true);
@@ -244,7 +244,7 @@ ExportSpecifier :
         });
         it("moves to last token in node", () => {
             const { navigator, lastToken, prevToken } = getNavigator("A : B? C?");
-            expect(navigator.moveToFirstChild(SyntaxKind.Production)).toBe(true);
+            expect(navigator.moveToFirstChild(SyntaxKind.Feature)).toBe(true);
             expect(navigator.moveToLastChild(SyntaxKind.RightHandSide)).toBe(true);
             expect(navigator.moveToFirstChild(SyntaxKind.SymbolSpan)).toBe(true);
             expect(navigator.moveToFirstChild(SyntaxKind.Nonterminal)).toBe(true);
@@ -324,7 +324,7 @@ ExportSpecifier :
         });
         it("moves to next token following current node", () => {
             const { navigator, nextToken, eof } = getNavigator("A :: B? `c`");
-            expect(navigator.moveToFirstChild(SyntaxKind.Production)).toBe(true);
+            expect(navigator.moveToFirstChild(SyntaxKind.Feature)).toBe(true);
             expect(navigator.moveToLastChild(SyntaxKind.RightHandSide)).toBe(true);
             expect(navigator.moveToFirstChild(SyntaxKind.SymbolSpan)).toBe(true);
             expect(navigator.moveToFirstChild(SyntaxKind.Nonterminal)).toBe(true);

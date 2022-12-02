@@ -8,7 +8,7 @@
 import { Cancelable } from "@esfx/cancelable";
 import { SyntaxKind } from "./tokens";
 import { Symbol, SymbolKind, SymbolTable } from "./symbols";
-import { SourceFile, Production, Parameter, Node, Declaration, Identifier } from "./nodes";
+import { SourceFile, Feature, Parameter, Node, Declaration, Identifier } from "./nodes";
 
 /** {@docCategory Bind} */
 export class BindingTable {
@@ -107,7 +107,7 @@ export class BindingTable {
     /**
      * Gets the declarations for the provided `symbol`.
      */
-    public getDeclarations(symbol: Symbol | undefined): (SourceFile | Production | Parameter)[] {
+    public getDeclarations(symbol: Symbol | undefined): (SourceFile | Feature | Parameter)[] {
         const declarations = symbol && this._symbolDeclarations?.get(symbol);
         return declarations ? [...declarations] : [];
     }
@@ -187,7 +187,7 @@ export class BindingTable {
     }
 
     /* @internal */
-    public _addDeclarationToSymbol(symbol: Symbol | undefined, node: SourceFile | Production | Parameter | undefined): void {
+    public _addDeclarationToSymbol(symbol: Symbol | undefined, node: SourceFile | Feature | Parameter | undefined): void {
         if (symbol && node) {
             this._symbolDeclarations ??= new Map();
             let declarations = this._symbolDeclarations.get(symbol);
@@ -244,8 +244,8 @@ export class Binder {
         bindings._copyFrom(fileBindings);
     }
 
-    private _bindProduction(bindings: BindingTable, scope: SymbolTable, node: Production): void {
-        const symbol = this._declareSymbol(bindings, scope, node.name.text, node, SymbolKind.Production);
+    private _bindFeature(bindings: BindingTable, scope: SymbolTable, node: Feature): void {
+        const symbol = this._declareSymbol(bindings, scope, node.name.text, node, SymbolKind.Feature);
         const newScope = bindings._getScope(symbol);
         this._bindChildren(bindings, node, symbol, newScope);
     }
@@ -273,8 +273,8 @@ export class Binder {
         if (node) {
             bindings._setParent(node, this._parentNode);
             switch (node.kind) {
-                case SyntaxKind.Production:
-                    this._bindProduction(bindings, scope, <Production>node);
+                case SyntaxKind.Feature:
+                    this._bindFeature(bindings, scope, <Feature>node);
                     break;
 
                 case SyntaxKind.Parameter:
@@ -288,7 +288,7 @@ export class Binder {
         }
     }
 
-    private _declareSymbol(bindings: BindingTable, scope: SymbolTable, name: string | undefined, declaration: SourceFile | Production | Parameter, kind: SymbolKind): Symbol {
+    private _declareSymbol(bindings: BindingTable, scope: SymbolTable, name: string | undefined, declaration: SourceFile | Feature | Parameter, kind: SymbolKind): Symbol {
         const symbol = scope.declareSymbol(name, kind, this._parentSymbol);
         bindings._addDeclarationToSymbol(symbol, declaration);
         return symbol;

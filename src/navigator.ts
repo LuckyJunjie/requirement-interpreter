@@ -491,12 +491,12 @@ export class NodeNavigator {
     }
 
     /**
-     * Moves the focus of the navigator to the parent of the focused {@link Node} if that parent is either a {@link Parameter} or a {@link Production}.
+     * Moves the focus of the navigator to the parent of the focused {@link Node} if that parent is either a {@link Parameter} or a {@link Feature}.
      * @returns `true` if the navigator's focus changed; otherwise, `false`.
      */
     public moveToDeclaration(): boolean {
         return this.moveToParent(SyntaxKind.Parameter)
-            || this.moveToParent(SyntaxKind.Production);
+            || this.moveToParent(SyntaxKind.Feature);
     }
 
     /**
@@ -511,7 +511,7 @@ export class NodeNavigator {
      * <li>If the focus or its nearest ancestor is a {@link LexicalGoalAssertion}, move to the `symbol` of the of the {@link LexicalGoalAssertion}.</li>
      * <li>If the focus or its nearest ancestor is a {@link Define}, move to the `key` of the {@link Define}.</li>
      * <li>If the focus or its nearest ancestor is a {@link Constraints}, move to the `name` of the of the first {@link Argument} of the {@link Constraints}.</li>
-     * <li>If the focus is not within the `body` of a {@link Production} and the focus or its nearest ancestor is a {@link Production}, move to the `name` of the {@link Production}.</li>
+     * <li>If the focus is not within the `body` of a {@link Feature} and the focus or its nearest ancestor is a {@link Feature}, move to the `name` of the {@link Feature}.</li>
      * </ul>
      */
     public moveToName(): boolean {
@@ -551,8 +551,8 @@ export class NodeNavigator {
             }
 
             navigator.moveTo(this);
-            if (!navigator.hasAncestor(matchProductionBody)
-                && navigator.moveToAncestorOrSelf(SyntaxKind.Production)
+            if (!navigator.hasAncestor(matchFeatureBody)
+                && navigator.moveToAncestorOrSelf(SyntaxKind.Feature)
                 && navigator.moveToFirstChild("name")) {
                 return this.moveTo(navigator);
             }
@@ -1484,7 +1484,7 @@ function bounded(offset: number, length: number) {
     return offset >= 0 && offset < length;
 }
 
-function matchProductionBody(node: Node) {
+function matchFeatureBody(node: Node) {
     return node.kind === SyntaxKind.OneOfList
         || node.kind === SyntaxKind.RightHandSideList
         || node.kind === SyntaxKind.RightHandSide;
@@ -1492,7 +1492,7 @@ function matchProductionBody(node: Node) {
 
 function matchSourceElement(node: Node) {
     return node.kind === SyntaxKind.Import
-        || node.kind === SyntaxKind.Production;
+        || node.kind === SyntaxKind.Feature;
 }
 
 function isNodeArray(value: any): value is ReadonlyArray<Node> {

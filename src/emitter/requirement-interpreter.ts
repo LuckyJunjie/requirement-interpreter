@@ -29,7 +29,7 @@ import {
     OneOfSymbol,
     Parameter,
     ParameterList,
-    Production,
+    Feature,
     Prose,
     ProseAssertion,
     RightHandSide,
@@ -57,7 +57,7 @@ export class RequirementInterpreterEmitter extends Emitter {
         for (const element of node.elements) {
             if (lastElement) {
                 if (!(isMetaElementKind(lastElement.kind) && isMetaElementKind(element.kind)) &&
-                    !areContiguousCollapsedProductions(lastElement, element)) {
+                    !areContiguousCollapsedFeatures(lastElement, element)) {
                     this.writer.writeBlank();
                 }
             }
@@ -104,7 +104,7 @@ export class RequirementInterpreterEmitter extends Emitter {
         this.emitNode(node.path);
     }
 
-    protected override emitProduction(node: Production) {
+    protected override emitFeature(node: Feature) {
         this.emitIdentifier(node.name);
         this.emitNode(node.parameterList);
         this.writer.write(" ");
@@ -443,10 +443,10 @@ export class RequirementInterpreterEmitter extends Emitter {
     }
 }
 
-function isCollapsedProduction(node: Node): node is Production & { readonly body: RightHandSide } {
-    return node instanceof Production && node.body instanceof RightHandSide;
+function isCollapsedFeature(node: Node): node is Feature & { readonly body: RightHandSide } {
+    return node instanceof Feature && node.body instanceof RightHandSide;
 }
 
-function areContiguousCollapsedProductions(left: Node, right: Node) {
-    return isCollapsedProduction(left) && isCollapsedProduction(right) && left.name.text === right.name.text;
+function areContiguousCollapsedFeatures(left: Node, right: Node) {
+    return isCollapsedFeature(left) && isCollapsedFeature(right) && left.name.text === right.name.text;
 }

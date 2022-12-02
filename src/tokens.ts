@@ -229,7 +229,7 @@ export enum SyntaxKind {
     Import, // @import "path"
     Define, // @define key value
     Line,   // @line 10 "path"
-    Production, // Production: ...
+    Feature, // Feature: ...
 
     // Nodes, Elements
     Parameter,
@@ -237,8 +237,8 @@ export enum SyntaxKind {
     Argument,
     ArgumentList, // [+In, ~Yield, ?Await]
     LinkReference, // #link
-    OneOfList, // Production: one of ...
-    RightHandSideList, // Production: RightHandSide...
+    OneOfList, // Feature: one of ...
+    RightHandSideList, // Feature: RightHandSide...
     RightHandSide, // ...: SymbolSpan
     Constraints, // [~Default]
     SymbolSpan, // Symbol Symbolopt
@@ -367,7 +367,7 @@ export type LookaheadOperatorKind =
     | SyntaxKind.LessThanExclamationToken
     | SyntaxKind.NotAnElementOfToken;
 
-export type ProductionSeperatorKind =
+export type FeatureSeperatorKind =
     | SyntaxKind.ColonToken
     | SyntaxKind.ColonColonToken
     | SyntaxKind.ColonColonColonToken
@@ -516,13 +516,13 @@ export function isProseFragmentKind(kind: SyntaxKind): kind is ProseFragmentKind
         || kind === SyntaxKind.Nonterminal;
 }
 
-export type ProductionBodyKind =
+export type FeatureBodyKind =
     | SyntaxKind.OneOfList
     | SyntaxKind.RightHandSide
     | SyntaxKind.RightHandSideList
     ;
 
-export function isProductionBodyKind(kind: SyntaxKind): kind is ProductionBodyKind {
+export function isFeatureBodyKind(kind: SyntaxKind): kind is FeatureBodyKind {
     return kind === SyntaxKind.OneOfList
         || kind === SyntaxKind.RightHandSide
         || kind === SyntaxKind.RightHandSideList;
@@ -542,12 +542,12 @@ export function isMetaElementKind(kind: SyntaxKind): kind is MetaElementKind {
 
 export type SourceElementKind =
     | MetaElementKind
-    | SyntaxKind.Production
+    | SyntaxKind.Feature
     ;
 
 export function isSourceElementKind(kind: SyntaxKind): kind is SourceElementKind {
     return isMetaElementKind(kind)
-        || kind === SyntaxKind.Production;
+        || kind === SyntaxKind.Feature;
 }
 
 const textToToken = new Map<string, SyntaxKind>([
@@ -626,7 +626,7 @@ export function tokenToString(kind: SyntaxKind | string, quoted?: boolean) {
             return "«unicode character literal»";
         case SyntaxKind.Prose:
             return "«prose»";
-        case SyntaxKind.Production:
+        case SyntaxKind.Feature:
             return "«production»";
         case SyntaxKind.OneOfList:
             return "«one of»";

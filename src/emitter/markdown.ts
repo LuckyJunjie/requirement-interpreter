@@ -22,7 +22,7 @@ import {
     OneOfSymbol,
     Parameter,
     ParameterList,
-    Production,
+    Feature,
     Prose,
     ProseAssertion,
     RightHandSide,
@@ -54,8 +54,8 @@ export class MarkdownEmitter extends Emitter {
         }
     }
 
-    protected emitProduction(node: Production) {
-        const linkId = this.resolver.getProductionLinkId(node.name);
+    protected emitFeature(node: Feature) {
+        const linkId = this.resolver.getFeatureLinkId(node.name);
         this.writer.write(`&emsp;&emsp;`);
         this.emitLinkAnchor(linkId);
         this.writer.write(`*`);
@@ -188,7 +188,7 @@ export class MarkdownEmitter extends Emitter {
     }
 
     protected emitNonterminal(node: Nonterminal) {
-        const linkId = this.resolver.getProductionLinkId(node.name);
+        const linkId = this.resolver.getFeatureLinkId(node.name);
         this.writer.write(`*`);
         this.emitNodeWithLink(node.name, linkId);
         this.writer.write(`*`);
@@ -280,7 +280,7 @@ export class MarkdownEmitter extends Emitter {
     }
 
     protected emitLexicalGoalAssertion(node: LexicalGoalAssertion): void {
-        const linkId = node.symbol && this.resolver.getProductionLinkId(node.symbol);
+        const linkId = node.symbol && this.resolver.getFeatureLinkId(node.symbol);
         this.writer.write(`\[lexical goal `);
         this.emitNodeWithLink(node.symbol, linkId);
         this.writer.write(`]`);
@@ -362,7 +362,7 @@ export class MarkdownEmitter extends Emitter {
                 break;
             case SyntaxKind.RightHandSideList:
             case SyntaxKind.OneOfList:
-            case SyntaxKind.Production:
+            case SyntaxKind.Feature:
                 this.writer.writeln();
                 break;
         }

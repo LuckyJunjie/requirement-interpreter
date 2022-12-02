@@ -10,7 +10,7 @@ let nextSymbolId = 0;
 /** {@docCategory Bind} */
 export enum SymbolKind {
     SourceFile,
-    Production,
+    Feature,
     Parameter
 }
 

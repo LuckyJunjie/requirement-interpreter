@@ -42,7 +42,7 @@ import {
     Parameter,
     ParameterList,
     PlaceholderSymbol,
-    Production,
+    Feature,
     Prose,
     ProseAssertion,
     ProseFragmentLiteral,
@@ -180,7 +180,7 @@ export class Emitter {
             case SyntaxKind.ParameterList: this.emitParameterList(<ParameterList>node); break;
             case SyntaxKind.Argument: this.emitArgument(<Argument>node); break;
             case SyntaxKind.ArgumentList: this.emitArgumentList(<ArgumentList>node); break;
-            case SyntaxKind.Production: this.emitProduction(<Production>node); break;
+            case SyntaxKind.Feature: this.emitFeature(<Feature>node); break;
             case SyntaxKind.Import: this.emitImport(<Import>node); break;
             case SyntaxKind.Define: this.emitDefine(<Define>node); break;
             case SyntaxKind.Line: this.emitLine(<Line>node); break;
@@ -303,7 +303,7 @@ export class Emitter {
         this.emitChildren(node);
     }
 
-    protected emitProduction(node: Production): void {
+    protected emitFeature(node: Feature): void {
         this.emitChildren(node);
     }
 

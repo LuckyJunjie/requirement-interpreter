@@ -10,7 +10,7 @@ import { Cancelable } from "@esfx/cancelable";
 import { concat, toCancelToken } from "./core";
 import { Range, TextRange } from "./types";
 import { Diagnostics, DiagnosticMessages, NullDiagnosticMessages, LineMap, formatList } from "./diagnostics";
-import { SyntaxKind, tokenToString, ProductionSeperatorKind, ArgumentOperatorKind, LookaheadOperatorKind, ParameterOperatorKind, TokenKind } from "./tokens";
+import { SyntaxKind, tokenToString, FeatureSeperatorKind, ArgumentOperatorKind, LookaheadOperatorKind, ParameterOperatorKind, TokenKind } from "./tokens";
 import { Scanner } from "./scanner";
 import {
     Node,
@@ -47,7 +47,7 @@ import {
     LinkReference,
     RightHandSide,
     RightHandSideList,
-    Production,
+    Feature,
     Import,
     Define,
     MetaElement,
@@ -426,7 +426,7 @@ export class Parser {
     private reportDiagnostics(): void {
         switch (this.parsingContext) {
             case ParsingContext.SourceElements:
-                this.diagnostics.report(this.scanner.getTokenPos(), Diagnostics.Production_expected);
+                this.diagnostics.report(this.scanner.getTokenPos(), Diagnostics.Feature_expected);
                 break;
 
             case ParsingContext.Parameters:
@@ -447,7 +447,7 @@ export class Parser {
                 break;
 
             case ParsingContext.RightHandSideListIndented:
-                this.diagnostics.report(this.scanner.getTokenPos(), Diagnostics.Production_expected);
+                this.diagnostics.report(this.scanner.getTokenPos(), Diagnostics.Feature_expected);
                 break;
         }
     }
@@ -1015,15 +1015,15 @@ export class Parser {
         }
     }
 
-    private parseProduction(): Production {
+    private parseFeature(): Feature {
         const fullStart = this.scanner.getStartPos();
         const name = this.parseIdentifier();
         // console.log(`#### name : ${JSON.stringify(name)}`);
         const parameters = this.tryParseParameterList();
-        const colonToken = this.parseAnyToken(isProductionSeparatorToken);
+        const colonToken = this.parseAnyToken(isFeatureSeparatorToken);
         const body = this.parseBody();
         // console.log(`#### name : ${JSON.stringify(body)}`);
-        const node = new Production(name, parameters, colonToken, body);
+        const node = new Feature(name, parameters, colonToken, body);
         return this.finishNode(node, fullStart);
     }
 
@@ -1100,7 +1100,7 @@ export class Parser {
         if (this.scanner.isIndented()) return false;
         switch (this.token) {
             case SyntaxKind.AtToken: // Import
-            case SyntaxKind.Identifier: // Production
+            case SyntaxKind.Identifier: // Feature
                 return true;
 
             case SyntaxKind.ColonToken:
@@ -1118,7 +1118,7 @@ export class Parser {
     private parseSourceElement(): SourceElement | undefined {
         let node: SourceElement | undefined;
         if (this.token === SyntaxKind.Identifier) {
-            node = this.parseProduction();
+            node = this.parseFeature();
             // TODO: print the node details
             console.log(`### token text:  ${this.readTokenText(this.token)}`);
             console.log(`### token value:  ${this.readTokenValue(this.token)}`);
@@ -1236,7 +1236,7 @@ function isInvalidConstraintTailRecoveryToken(scanner: Scanner) {
         || scanner.hasPrecedingLineTerminator();
 }
 
-function isProductionSeparatorToken(token: SyntaxKind): token is ProductionSeperatorKind {
+function isFeatureSeparatorToken(token: SyntaxKind): token is FeatureSeperatorKind {
     return token === SyntaxKind.ColonToken
         || token === SyntaxKind.ColonColonToken
         || token === SyntaxKind.ColonColonColonToken || token === SyntaxKind.TildeToken;

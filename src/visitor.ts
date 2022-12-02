@@ -39,7 +39,7 @@ import {
     LinkReference,
     RightHandSide,
     RightHandSideList,
-    Production,
+    Feature,
     Import,
     Define,
     NumberLiteral,
@@ -211,7 +211,7 @@ export abstract class NodeVisitor {
         return node.update(this.visitEach(node.elements));
     }
 
-    public visitProduction(node: Production): Production {
+    public visitFeature(node: Feature): Feature {
         return node.update(this.visit(node.name), this.visit(node.parameterList), this.visit(node.body));
     }
 

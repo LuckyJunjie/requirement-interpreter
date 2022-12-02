@@ -32,7 +32,7 @@ import {
     SymbolSpan,
     RightHandSide,
     RightHandSideList,
-    Production,
+    Feature,
     TextContent,
     TerminalLiteral
 } from "../nodes";
@@ -41,8 +41,8 @@ import {
 export class EcmarkupEmitter extends Emitter {
     protected extension = ".emu.html";
 
-    protected emitProduction(node: Production) {
-        const linkId = this.resolver.getProductionLinkId(node.name);
+    protected emitFeature(node: Feature) {
+        const linkId = this.resolver.getFeatureLinkId(node.name);
         this.emitLinkAnchor(linkId);
         this.writer.write(`<emu-production name="`);
         this.emitIdentifier(node.name);
@@ -169,7 +169,7 @@ export class EcmarkupEmitter extends Emitter {
             case SyntaxKind.RightHandSideList:
             case SyntaxKind.RightHandSide:
             case SyntaxKind.OneOfList:
-            case SyntaxKind.Production:
+            case SyntaxKind.Feature:
                 this.writer.writeln();
                 break;
         }
@@ -199,7 +199,7 @@ export class EcmarkupEmitter extends Emitter {
     }
 
     protected emitNonterminal(node: Nonterminal) {
-        const linkId = this.resolver.getProductionLinkId(node.name);
+        const linkId = this.resolver.getFeatureLinkId(node.name);
         this.writer.write(`<emu-nt`);
         this.emitNode(node.argumentList);
         if (node.questionToken) {
@@ -314,7 +314,7 @@ export class EcmarkupEmitter extends Emitter {
 
     protected emitLexicalGoalAssertion(node: LexicalGoalAssertion): void {
         this.writer.write(`<emu-gann>lexical goal `);
-        const linkId = node.symbol && this.resolver.getProductionLinkId(node.symbol);
+        const linkId = node.symbol && this.resolver.getFeatureLinkId(node.symbol);
         this.emitNodeWithLink(node.symbol, linkId);
         this.writer.write(`</emu-gann>`);
     }

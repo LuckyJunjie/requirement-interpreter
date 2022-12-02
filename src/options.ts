@@ -67,7 +67,7 @@ export interface CompilerOptions {
     /**
      * Disables strict checking of production parameters.
      */
-    noStrictParametricProductions?: boolean;
+    noStrictParametricFeatures?: boolean;
     /**
      * Indicates that diagnostics should be produced if production parameters are unused.
      */

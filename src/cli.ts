@@ -33,7 +33,7 @@ const knownOptions: KnownOptions = {
     "noEmit": { type: "boolean", description: "Does not emit output." },
     "noEmitOnError": { type: "boolean", description: "Does not emit output if there are errors." },
     "noChecks": { type: "boolean", description: "Does not perform static checking of the interpreter." },
-    "noStrictParametricProductions": { type: "boolean", description: "Does not perform strict checking of parametric productions and nonterminals." },
+    "noStrictParametricFeatures": { type: "boolean", description: "Does not perform strict checking of parametric productions and nonterminals." },
     "noUnusedParameters": { type: "boolean", description: "Disallow unused parameters in productions." },
     "emitLinks": { type: "boolean", hidden: true },
     "usage": { aliasFor: ["--help"], hidden: true },
@@ -83,7 +83,7 @@ async function performCompilation(options: ParsedCommandLine): Promise<void> {
     if (options.noChecks) compilerOptions.noChecks = true;
     if (options.noEmit) compilerOptions.noEmit = true;
     if (options.noEmitOnError) compilerOptions.noEmitOnError = true;
-    if (options.noStrictParametricProductions) compilerOptions.noStrictParametricProductions = true;
+    if (options.noStrictParametricFeatures) compilerOptions.noStrictParametricFeatures = true;
     if (options.emitLinks) compilerOptions.emitLinks = true;
     if (options.diagnostics) compilerOptions.diagnostics = true;
 

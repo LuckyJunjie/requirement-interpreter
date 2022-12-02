@@ -33,7 +33,7 @@ import {
     SymbolSpan,
     RightHandSide,
     RightHandSideList,
-    Production,
+    Feature,
     TextContent,
     TerminalLiteral
 } from "../nodes";
@@ -52,8 +52,8 @@ export class HtmlEmitter extends Emitter {
         this.writer.write(`</div>`);
     }
 
-    protected emitProduction(node: Production) {
-        const linkId = this.resolver.getProductionLinkId(node.name);
+    protected emitFeature(node: Feature) {
+        const linkId = this.resolver.getFeatureLinkId(node.name);
         this.emitLinkAnchor(linkId);
         this.writer.write(`<div class="production">`);
         this.writer.indent();
@@ -196,7 +196,7 @@ export class HtmlEmitter extends Emitter {
     }
 
     protected emitNonterminal(node: Nonterminal) {
-        const linkId = this.resolver.getProductionLinkId(node.name);
+        const linkId = this.resolver.getFeatureLinkId(node.name);
         this.writer.write(`<span class="nonterminal">`);
         this.emitNodeWithLink(node.name, linkId);
         this.writer.write(`</span>`);
@@ -314,7 +314,7 @@ export class HtmlEmitter extends Emitter {
 
     protected emitLexicalGoalAssertion(node: LexicalGoalAssertion): void {
         this.writer.write(`<span class="assertion">[<span class="keyword">lexical</span> </span>goal</span>`);
-        const linkId = node.symbol && this.resolver.getProductionLinkId(node.symbol);
+        const linkId = node.symbol && this.resolver.getFeatureLinkId(node.symbol);
         this.emitNodeWithLink(node.symbol, linkId);
         this.writer.write(`</span>`);
     }
@@ -376,7 +376,7 @@ export class HtmlEmitter extends Emitter {
             case SyntaxKind.RightHandSideList:
             case SyntaxKind.RightHandSide:
             case SyntaxKind.OneOfList:
-            case SyntaxKind.Production:
+            case SyntaxKind.Feature:
                 this.writer.writeln();
                 break;
         }
