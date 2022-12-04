@@ -190,12 +190,12 @@ export class Parser {
 
         this.nextToken();
 
-        // TODO: print all token without any logic and no node created.Just to check the source file overview.
-        while (!this.isEOF()) {
-            this.nextToken();
-            console.log(`### token text:  ${this.readTokenText(this.token)}`);
-            console.log(`### token value:  ${this.readTokenValue(this.token)}`);
-        }
+        // TODO: 2022.12.04 used for debug, print all token without any logic and no node created.Just to check the source file overview.
+        // while (!this.isEOF()) {
+        //     this.nextToken();
+        //     console.log(`### token text:  ${this.readTokenText(this.token)}`);
+        //     console.log(`### token value:  ${this.readTokenValue(this.token)}`);
+        // }
 
         this.parseSourceElementList(elements);
 
@@ -249,10 +249,14 @@ export class Parser {
     }
 
     private skipUntil(isRecoveryToken: (scanner: Scanner) => boolean): void {
+        // TODO: 2022.12.04 debug purpose
+        // console.log(`%%%%% token text:  ${this.readTokenText(this.token)}`);
+        // console.log(`%%%%% token value:  ${this.readTokenValue(this.token)}`);
         while (!isRecoveryToken(this.scanner) && !this.isEOF()) {
-            this.nextToken();
+            // TODO: 2022.12.04 debug purpose
             // console.log(`### token text:  ${this.readTokenText(this.token)}`);
             // console.log(`### token value:  ${this.readTokenValue(this.token)}`);
+            this.nextToken();
         }
     }
 
@@ -386,6 +390,8 @@ export class Parser {
     private recover(): void {
         switch (this.parsingContext) {
             case ParsingContext.SourceElements:
+                // TODO: 2022.12.04 debug purpose
+                console.log(`#### trying to recover.... `);
                 this.skipUntil(isSourceElementsRecoveryToken);
                 break;
 
@@ -455,6 +461,7 @@ export class Parser {
     private tryStopParsingList() {
         switch (this.parsingContext) {
             case ParsingContext.SourceElements:
+                // TODO: 2022.12.04 check the leading trivia, scanner set the flag for leading trivia open and close tag
                 return this.token === SyntaxKind.EndOfFileToken;
 
             case ParsingContext.Parameters:
@@ -462,9 +469,13 @@ export class Parser {
                 return this.token === SyntaxKind.CloseBracketToken;
 
             case ParsingContext.RightHandSideListIndented:
-                return this.token === SyntaxKind.EndOfFileToken
-                    || this.scanner.hasPrecedingDedent()
-                    || this.scanner.hasPrecedingBlankLine();
+                // TODO: 2022.12.04 Parse until the trivia closed, need more carefully consider the condition for feature body.
+                return this.scanner.hasFeatureCloseTrivia() || this.token === SyntaxKind.EndOfFileToken;
+
+                // TODO: 2022.12.04 original conditions
+                // return this.token === SyntaxKind.EndOfFileToken
+                //     || this.scanner.hasPrecedingDedent()
+                //     || this.scanner.hasPrecedingBlankLine();
 
             case ParsingContext.SymbolSet:
                 return this.token === SyntaxKind.CloseBraceToken;
@@ -525,6 +536,9 @@ export class Parser {
                 if (!result) {
                     result = [];
                 }
+
+                // TODO: 2022.12.04, debug purpose to check the current token value.
+                console.log(`### token text:  ${this.scanner.getTokenValue()}`);
 
                 const element = this.parseElement(listContext);
                 if (element) {
@@ -858,6 +872,10 @@ export class Parser {
 
             case SyntaxKind.Identifier:
                 return this.parseNonterminal(/*allowArgumentList*/ true, allowOptional);
+
+            case SyntaxKind.NumberLiteral:
+                // TODO: 2022.12.04, right side include the number literal, so that the scan can be continue to next token.
+                return this.parseNumberLiteral()!;
         }
 
         const placeholderToken = this.parseToken(SyntaxKind.AtToken);
@@ -951,7 +969,9 @@ export class Parser {
                 return true;
 
             default:
-                return false;
+                // TODO:2022.12.04 want to use the right side list as the feature content, quickly lose this condition,
+                // need more consideration
+                return true;
         }
     }
 
@@ -997,7 +1017,8 @@ export class Parser {
 
     private parseRightHandSideList(): RightHandSideList {
         const fullStart = this.scanner.getStartPos();
-        const elements = this.scanner.hasPrecedingIndent() && this.parseList(ParsingContext.RightHandSideListIndented) || [];
+        // const elements = this.scanner.hasPrecedingIndent() && this.parseList(ParsingContext.RightHandSideListIndented) || [];
+        const elements = this.parseList(ParsingContext.RightHandSideListIndented) || [];
         const node = new RightHandSideList(elements);
         return this.finishNode(node, fullStart);
     }
@@ -1007,22 +1028,37 @@ export class Parser {
         if (oneKeyword) {
             return this.parseOneOfList(oneKeyword);
         }
-        if (this.scanner.hasPrecedingLineTerminator()) {
-            return this.parseRightHandSideList();
-        }
-        else {
-            return this.parseRightHandSide();
-        }
+
+        // TODO: 2022.12.04 assume the right side as a list for feature content, as feature won't terminated by line or empty line only terminated by the feature close tag.
+        // if (this.scanner.hasPrecedingLineTerminator()) {
+        return this.parseRightHandSideList();
+        // }
+        // else {
+        //     return this.parseRightHandSide();
+        // }
     }
 
     private parseFeature(): Feature {
         const fullStart = this.scanner.getStartPos();
         const name = this.parseIdentifier();
-        // console.log(`#### name : ${JSON.stringify(name)}`);
+        console.log(`>>>>>>>>> name : ${JSON.stringify(name)}`);
+
+        // TODO: 2022.12.04, debug purpose to print the trivia, tags.
+        // name.leadingTrivia?.forEach((trivia:Trivia)=>{
+        //     if (trivia && (trivia.kind === SyntaxKind.HtmlOpenTagTrivia || trivia.kind === SyntaxKind.HtmlCloseTagTrivia)) {
+        //         console.log(`TagName of the trivia : ${trivia.tagName}`);
+        //     }
+        // });
+
+        // name.trailingTrivia?.forEach((trivia:Trivia)=>{
+        //     if (trivia && (trivia.kind === SyntaxKind.HtmlOpenTagTrivia || trivia.kind === SyntaxKind.HtmlCloseTagTrivia)) {
+        //         console.log(`TagName of the trivia : ${trivia.tagName}`);
+        //     }
+        // });
+
         const parameters = this.tryParseParameterList();
         const colonToken = this.parseAnyToken(isFeatureSeparatorToken);
         const body = this.parseBody();
-        // console.log(`#### name : ${JSON.stringify(body)}`);
         const node = new Feature(name, parameters, colonToken, body);
         return this.finishNode(node, fullStart);
     }
@@ -1118,11 +1154,12 @@ export class Parser {
     private parseSourceElement(): SourceElement | undefined {
         let node: SourceElement | undefined;
         if (this.token === SyntaxKind.Identifier) {
+            // TODO: 2022.12.04, debug purpose
+            // console.log(`### token text:  ${this.readTokenText(this.token)}`);
+            // console.log(`### token value:  ${this.readTokenValue(this.token)}`);
             node = this.parseFeature();
-            // TODO: print the node details
-            console.log(`### token text:  ${this.readTokenText(this.token)}`);
-            console.log(`### token value:  ${this.readTokenValue(this.token)}`);
-            console.log(`&&&  ${JSON.stringify(node)}`);
+            // print the node details
+            console.log(`&&&  ${node}`);
         }
         else {
             const atToken = this.parseToken(SyntaxKind.AtToken);

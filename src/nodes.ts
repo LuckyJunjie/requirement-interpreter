@@ -219,6 +219,8 @@ export type HtmlTrivia =
     | HtmlCommentTrivia
     | HtmlOpenTagTrivia
     | HtmlCloseTagTrivia
+    | FeatureOpenTagTrivia
+    | FeatureCloseTagTrivia
     ;
 
 /**
@@ -260,6 +262,12 @@ export class HtmlOpenTagTrivia extends HtmlTagTriviaBase<SyntaxKind.HtmlOpenTagT
     }
 }
 
+export class FeatureOpenTagTrivia extends HtmlTagTriviaBase<SyntaxKind.HtmlOpenTagTrivia> {
+    public constructor(tagName: string) {
+        super(SyntaxKind.HtmlOpenTagTrivia, tagName);
+    }
+}
+
 /**
  * Represents an HTML close-tag trivia token:
  * ```requirement-interpreter
@@ -270,6 +278,12 @@ export class HtmlOpenTagTrivia extends HtmlTagTriviaBase<SyntaxKind.HtmlOpenTagT
  * {@docCategory Nodes}
  */
 export class HtmlCloseTagTrivia extends HtmlTagTriviaBase<SyntaxKind.HtmlCloseTagTrivia> {
+    public constructor(tagName: string) {
+        super(SyntaxKind.HtmlCloseTagTrivia, tagName);
+    }
+}
+
+export class FeatureCloseTagTrivia extends HtmlTagTriviaBase<SyntaxKind.HtmlCloseTagTrivia> {
     public constructor(tagName: string) {
         super(SyntaxKind.HtmlCloseTagTrivia, tagName);
     }
@@ -815,6 +829,7 @@ export type LexicalSymbol =
     | Prose
     | OneOfSymbol
     | InvalidSymbol
+    | NumberLiteral
     ;
 
 //

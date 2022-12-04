@@ -156,6 +156,8 @@ export enum SyntaxKind {
     // Trivia, Html
     HtmlCommentTrivia, // FirstHtmlTrivia
     HtmlOpenTagTrivia,
+    FeatureOpenTagTrivia,// Feature open tag,  details>
+    FeatureCloseTagTrivia, // Feature close tag, /details>
     HtmlCloseTagTrivia, // LastHtmlTrivia, LastTrivia
 
     // Tokens, Other
@@ -189,6 +191,7 @@ export enum SyntaxKind {
 
     // Tokens, Keywords
     ButKeyword, // FirstKeyword
+    GroomingChangesId,
     DefineKeyword,
     DefaultKeyword,
     EmptyKeyword,
@@ -593,6 +596,8 @@ const textToToken = new Map<string, SyntaxKind>([
     ["or", SyntaxKind.OrKeyword],
     ["through", SyntaxKind.ThroughKeyword],
     ["true", SyntaxKind.TrueKeyword],
+    ["details>", SyntaxKind.FeatureOpenTagTrivia],
+    ["/details>", SyntaxKind.FeatureCloseTagTrivia],
 ]);
 
 const tokenToText = new Map<SyntaxKind, string>([...textToToken]

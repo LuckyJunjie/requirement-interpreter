@@ -10,7 +10,7 @@ import { Cancelable } from '@esfx/cancelable';
 import { toCancelToken } from './core';
 import { DiagnosticMessages, Diagnostics, NullDiagnosticMessages } from "./diagnostics";
 import { getNodeAccessor, getTriviaAccessor } from './nodeInternal';
-import { CommentTrivia, HtmlCloseTagTrivia, HtmlOpenTagTrivia, HtmlCommentTrivia, HtmlTrivia, MultiLineCommentTrivia, SingleLineCommentTrivia, Trivia } from './nodes';
+import { CommentTrivia, HtmlCloseTagTrivia, HtmlOpenTagTrivia, HtmlCommentTrivia, HtmlTrivia, MultiLineCommentTrivia, SingleLineCommentTrivia, Trivia, FeatureOpenTagTrivia, FeatureCloseTagTrivia } from './nodes';
 import { CharacterCodes, isProseFragmentLiteralKind, stringToToken, SyntaxKind, isHtmlTriviaKind } from "./tokens";
 
 const enum TokenFlags {
@@ -28,6 +28,9 @@ const enum TokenFlags {
     TriviaPrecedingBlankLine = 1 << 8,
     TriviaPrecedingWhiteSpaceTrivia = 1 << 9,
     TriviaFlags = TriviaPrecedingLineTerminator | TriviaPrecedingBlankLine | TriviaPrecedingWhiteSpaceTrivia,
+    FeatureOpenTrivia = 1 << 10, // mark the feature start
+    FeatureCloseTrivia = 1 << 11, // mark the feature end
+    FeatureFlags = FeatureOpenTrivia | FeatureCloseTrivia,
 }
 
 /** {@docCategory Parse} */
@@ -135,6 +138,14 @@ export class Scanner {
         return (this.tokenFlags & TokenFlags.PrecedingNonWhiteSpaceTrivia) === TokenFlags.PrecedingNonWhiteSpaceTrivia;
     }
 
+    public hasFeatureOpenTrivia() {
+        return (this.tokenFlags & TokenFlags.FeatureOpenTrivia) === TokenFlags.FeatureOpenTrivia;
+    }
+
+    public hasFeatureCloseTrivia() {
+        return (this.tokenFlags & TokenFlags.FeatureCloseTrivia) === TokenFlags.FeatureCloseTrivia;
+    }
+
     private triviaHasPrecedingLineTerminator() {
         return (this.tokenFlags & TokenFlags.TriviaPrecedingLineTerminator) === TokenFlags.TriviaPrecedingLineTerminator;
     }
@@ -198,12 +209,24 @@ export class Scanner {
         this.tokenFlags |= TokenFlags.TriviaPrecedingWhiteSpaceTrivia;
     }
 
+    private setFeatureOpenTrivia() {
+        this.tokenFlags |= TokenFlags.FeatureOpenTrivia;
+    }
+
+    private setFeatureCloseTrivia() {
+        this.tokenFlags |= TokenFlags.FeatureCloseTrivia;
+    }
+
     private resetTriviaHasPrecedingWhiteSpaceTrivia() {
         this.tokenFlags &= ~TokenFlags.TriviaPrecedingWhiteSpaceTrivia;
     }
 
     private resetTriviaFlags() {
         this.tokenFlags &= ~TokenFlags.TriviaFlags;
+    }
+
+    private resetFeatureFlags() {
+        this.tokenFlags &= ~TokenFlags.FeatureFlags;
     }
 
     public resetIndent() {
@@ -251,6 +274,7 @@ export class Scanner {
         this.tokenValue = "";
         this.tokenFlags = 0;
         this.trivia = undefined;
+        this.resetFeatureFlags(); // Reset feature flags, will be scan from current token again
         while (true) {
             this.tokenPos = this.pos;
             if (this.pos >= this.len) {
@@ -759,6 +783,20 @@ export class Scanner {
         this.pos = end;
 
         const tagName = this.text.slice(tagNamePos, tagNameEnd === -1 ? end : tagNameEnd);
+
+        // 2022.12.04, mark the feature start and end.
+        const tagToken = stringToToken(tagName);
+        if (tagToken === SyntaxKind.FeatureOpenTagTrivia || tagToken === SyntaxKind.FeatureCloseTagTrivia) {
+            if (isClosingTag) {
+                this.setFeatureCloseTrivia();
+                this.recordTrivia(new FeatureCloseTagTrivia(tagName));
+            }
+            else {
+                this.setFeatureOpenTrivia();
+                this.recordTrivia(new FeatureOpenTagTrivia(tagName));
+            }
+            return;
+        }
         this.recordTrivia(isClosingTag ? new HtmlCloseTagTrivia(tagName) : new HtmlOpenTagTrivia(tagName));
     }
 
